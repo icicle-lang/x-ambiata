@@ -11,7 +11,7 @@ MODULES=$(ls x-*/*.cabal)
 
 for x in $MODULES; do
     (
-        cd $(dirname $)
+        cd $(dirname $x)
         ./cabal update || exit $?
         ./cabal build || exit $?
         ./cabal test || exit $?
