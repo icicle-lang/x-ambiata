@@ -14,6 +14,9 @@ library
   build-depends:
                        base                            >= 3          && < 5
                      , htoml                           == 0.1.*
+                     , lens                            >= 4.6        && < 4.9
+                     , text                            == 1.2.*
+                     , time                            == 1.4.*
 
   ghc-options:
                        -Wall
@@ -37,7 +40,10 @@ test-suite test
 
   build-depends:
                        base                            >= 3          && < 5
-                     , x-htoml
+                     , htoml
                      , orphanarium-core
+                     , orphanarium-lens
+                     , text
                      , QuickCheck                      == 2.7.*
                      , quickcheck-instances            == 0.3.*
+                     , x-htoml
