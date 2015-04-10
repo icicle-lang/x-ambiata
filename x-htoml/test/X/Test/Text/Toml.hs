@@ -13,6 +13,8 @@ import           Data.Ord
 
 import           Orphanarium.Lens
 
+import           Prelude (div)
+
 import           System.IO
 
 import           Test.QuickCheck
@@ -70,7 +72,7 @@ instance Arbitrary TValue where
     ]
 
 instance Arbitrary Node where
-  arbitrary = sized $ \n -> resize (min n 2) $ oneof [
+  arbitrary = sized $ \n -> resize (min 10 $ n `div` 2) $ oneof [
       NTValue <$> arbitrary
     , NTable <$> arbitrary
     , NTArray <$> arbitrary
