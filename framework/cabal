@@ -41,12 +41,6 @@ project_name () {
 # brute force wins.
 #
 initialize () {
-    # submodules initialized if required, this could be conditional but no harm
-    # in just doing at this point.
-    git submodule init
-    git submodule sync
-    git submodule update
-
     # sandbox initialized if required, this should support sandboxes in parent directories
     [ -f cabal.sandbox.config ] || {
         cabal sandbox init
@@ -58,6 +52,15 @@ initialize () {
         SANDBOX="--sandbox $(cat ${project}.sandbox)"
     }
     [ ! -f "$project.submodules" ] || {
+        # submodules initialized if required, the "has it been done before" is pretty crude, but check is useful.
+        cat $project.submodules | while read submodule; do
+            find "$submodule" -maxdepth 2 -name \*.cabal
+        done | grep -q . || (
+            cd $(git rev-parse --show-toplevel)
+            git submodule init
+            git submodule update
+        )
+
         cat $project.submodules | while read submodule; do
             # ideally this would be conditional but yeh, stuff
             cabal sandbox add-source ${SANDBOX:-} "$submodule"
