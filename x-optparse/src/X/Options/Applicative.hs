@@ -27,7 +27,7 @@ pOption :: A.Parser a -> ReadM a
 pOption p =
   either readerError pure =<< (ReadM . ReaderT $ pure . A.parseOnly p . T.pack)
 
--- | A 'command' combninator that adds helper and description in a slightly cleaner way
+-- | A 'command' combinator that adds helper and description in a slightly cleaner way
 command' :: String -> String -> Parser a -> Mod CommandFields a
 command' label description parser =
   command label (info (parser <**> helper) (progDesc description))
