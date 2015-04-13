@@ -150,7 +150,7 @@ run_init () {
 # Run cabal update, but not more often than once a day.
 #
 run_update () {
-    if test -f $HOME/.cabal/packages/hackage.haskell.org/00-index.cache || find $HOME/.cabal/packages/hackage.haskell.org/00-index.cache -type f -mtime +1 | grep -q 00-index; then
+    if ! test -f $HOME/.cabal/packages/hackage.haskell.org/00-index.cache || find $HOME/.cabal/packages/hackage.haskell.org/00-index.cache -type f -mtime +1 | grep -q 00-index; then
         cabal update
     else
         true
