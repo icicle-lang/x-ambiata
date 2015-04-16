@@ -3,15 +3,17 @@
 {-# LANGUAGE TemplateHaskell #-}
 module X.Test.Options.Applicative where
 
+import           Control.Applicative
 import           Control.Monad
-import           Control.Monad.Trans.Reader
 import           Control.Monad.Trans.Except
+import           Control.Monad.Trans.Reader
 
 import qualified Data.Attoparsec.Text as A
 import           Data.Either
 import           Data.Function
 import           Data.Maybe
 import           Data.Bool
+import           Data.Int
 import           Data.Text as T
 
 import           Options.Applicative.Types
@@ -30,6 +32,10 @@ prop_pOption t =
       parser' = either (const Nothing) Just . A.parseOnly parser $ t
       read' = either (const Nothing) Just . runExcept . runReaderT (unReadM read) . T.unpack $ t
    in parser' === read'
+
+prop_orDie :: Int -> Property
+prop_orDie n =
+  ioProperty $ orDie id (pure n) >>= \r -> pure $ r === n
 
 return []
 tests :: IO Bool
