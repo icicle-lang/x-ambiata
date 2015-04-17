@@ -2,6 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module X.Options.Applicative (
     pOption
+  , textRead
   , command'
   , dispatch
   , orDie
@@ -29,6 +30,9 @@ import           System.Exit
 pOption :: A.Parser a -> ReadM a
 pOption p =
   either readerError pure =<< (ReadM . ReaderT $ pure . A.parseOnly p . T.pack)
+
+textRead :: ReadM Text
+textRead = fmap T.pack str
 
 -- | A 'command' combinator that adds helper and description in a
 --   slightly cleaner way

@@ -33,6 +33,11 @@ prop_pOption t =
       read' = either (const Nothing) Just . runExcept . runReaderT (unReadM read) . T.unpack $ t
    in parser' === read'
 
+prop_textRead :: Text -> Property
+prop_textRead t =
+  -- Converting to Maybe because ParseError doesn't have an Eq instance defined
+  (either (const Nothing) Just . runExcept . runReaderT (unReadM textRead) $ T.unpack t) === Just t
+
 prop_orDie :: Int -> Property
 prop_orDie n =
   ioProperty $ orDie id (pure n) >>= \r -> pure $ r === n
