@@ -6,6 +6,12 @@ module X.Options.Applicative (
   , command'
   , dispatch
   , orDie
+  , envvar
+  , envvarValue
+  , tstrOption
+  , optionFromText
+  , optionFromText'
+  , fromEitherText
   ) where
 
 import           Control.Applicative
@@ -14,13 +20,19 @@ import           Control.Monad.Trans.Reader
 import           Control.Monad.Trans.Either
 
 import qualified Data.Attoparsec.Text as A
+import           Data.Bifunctor ( first )
 import           Data.Either
 import           Data.Function
+import           Data.List
+import           Data.Maybe
 import           Data.String (String)
 import           Data.Text as T
 
 import           Options.Applicative
+import           Options.Applicative.Builder.Internal ( HasValue )
 import           Options.Applicative.Types
+
+import           P
 
 import           System.IO
 import           System.Environment (getArgs)
@@ -59,3 +71,37 @@ orDie :: (e -> Text) -> EitherT e IO a -> IO a
 orDie render e =
   runEitherT e >>=
     either (\err -> (hPutStrLn stderr . T.unpack . render) err >> exitFailure) pure
+
+-- |
+-- sets a default to an environment variable value,
+-- unfortunately the usage docs will be a bit crap and they wont mention the env var that it defaults to unless its set (in which case it will show the value also
+-- and where it came from, but theres nothing better at this stage unfortunately...
+--
+-- see <https://github.com/pcapriotti/optparse-applicative/issues/118> .
+--
+-- so at the moment you probably want to add something to the help message mentioning the environment var name
+--
+envvar :: (HasValue f) => Maybe a -> Mod f a
+envvar = maybe idm (\i -> value i <> showDefaultWith(\_ -> "environment variable set."))
+
+-- |
+-- Like `envvar` but it hides the value of the environment variable in cases where the value might be sensitive (like an AWS key or something) and you
+-- don't want to advertise the value in the usage information...
+--
+envvarValue :: (HasValue f) => (a -> T.Text) -> Maybe a -> Mod f a
+envvarValue f = maybe idm (\i -> value i <> showDefaultWith(\d -> "environment variable set: '" ++ T.unpack (f d) ++ "'"))
+
+-- parsers
+
+tstrOption :: Mod OptionFields T.Text -> Parser T.Text
+tstrOption = option . eitherReader $ pure . T.pack
+
+optionFromText :: (e -> T.Text) -> (T.Text -> Either e a) -> Mod OptionFields a -> Parser a
+optionFromText showErr parseText = option . eitherReader $ fromEitherText showErr parseText
+
+optionFromText' :: (e -> T.Text) -> (T.Text -> e) -> (T.Text -> Maybe a) -> Mod OptionFields a -> Parser a
+optionFromText' showErr err f = option . eitherReader $ fromEitherText showErr (\t -> maybeToRight (err t) (f t))
+
+fromEitherText :: (e -> T.Text) -> (T.Text -> Either e a) -> String -> Either String a
+fromEitherText showErr parseText =
+  first (T.unpack . showErr) . parseText . T.pack
