@@ -7,7 +7,7 @@ module X.Options.Applicative (
   , dispatch
   , orDie
   , envvar
-  , envvarHidden
+  , envvarValue
   , tstrOption
   , optionFromText
   , optionFromText'
@@ -81,15 +81,15 @@ orDie render e =
 --
 -- so at the moment you probably want to add something to the help message mentioning the environment var name
 --
-envvar :: (HasValue f) => (a -> T.Text) -> Maybe a -> Mod f a
-envvar f = maybe idm (\i -> value i <> showDefaultWith(\d -> "environment variable set: '" ++ T.unpack (f d) ++ "'"))
+envvar :: (HasValue f) => Maybe a -> Mod f a
+envvar = maybe idm (\i -> value i <> showDefaultWith(\_ -> "environment variable set."))
 
 -- |
 -- Like `envvar` but it hides the value of the environment variable in cases where the value might be sensitive (like an AWS key or something) and you
 -- don't want to advertise the value in the usage information...
 --
-envvarHidden :: (HasValue f) => Maybe a -> Mod f a
-envvarHidden = maybe idm value
+envvarValue :: (HasValue f) => (a -> T.Text) -> Maybe a -> Mod f a
+envvarValue f = maybe idm (\i -> value i <> showDefaultWith(\d -> "environment variable set: '" ++ T.unpack (f d) ++ "'"))
 
 -- parsers
 
@@ -103,5 +103,5 @@ optionFromText' :: (e -> T.Text) -> (T.Text -> e) -> (T.Text -> Maybe a) -> Mod 
 optionFromText' showErr err f = option . eitherReader $ fromEitherText showErr (\t -> maybeToRight (err t) (f t))
 
 fromEitherText :: (e -> T.Text) -> (T.Text -> Either e a) -> String -> Either String a
-fromEitherText showErr parseText=
+fromEitherText showErr parseText =
   first (T.unpack . showErr) . parseText . T.pack
