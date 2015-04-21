@@ -38,7 +38,7 @@ textRead = fmap T.pack str
 --   slightly cleaner way
 command' :: String -> String -> Parser a -> Mod CommandFields a
 command' label description parser =
-  command label (info (parser <**> helper) (progDesc description))
+  command label (info (parser <**> helper) (progDesc description)) <> metavar label
 
 -- | Dispatch multi-mode programs with appropriate helper to make the
 --   default behaviour a bit better.
