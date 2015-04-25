@@ -34,6 +34,10 @@ instance FromJSON Foo where
 prop_maybe :: Foo -> Property
 prop_maybe = jsonProp
 
+prop_text :: Foo -> Property
+prop_text f =
+  as (asText f) === Right f
+
 return []
 tests :: IO Bool
 tests = $quickCheckAll
