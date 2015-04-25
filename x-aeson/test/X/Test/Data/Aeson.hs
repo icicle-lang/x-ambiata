@@ -5,6 +5,7 @@ module X.Test.Data.Aeson where
 import           Control.Applicative
 
 import           Data.Aeson
+import           Data.Aeson.Types
 import           Data.Text
 
 import           Orphanarium.Aeson
@@ -37,6 +38,10 @@ prop_maybe = jsonProp
 prop_text :: Foo -> Property
 prop_text f =
   as (asText f) === Right f
+
+prop_pair :: Text -> Text -> (Text, Text) -> Property
+prop_pair k v p =
+  parseMaybe (const $ parsePair k v (printPair k v p)) () === Just p
 
 return []
 tests :: IO Bool
