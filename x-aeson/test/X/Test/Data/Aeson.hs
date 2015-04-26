@@ -6,7 +6,7 @@ import           Control.Applicative
 
 import           Data.Aeson
 import           Data.Aeson.Types
-import           Data.Text
+import           Data.Text as T
 
 import           Orphanarium.Aeson
 
@@ -41,7 +41,8 @@ prop_text f =
 
 prop_pair :: Text -> Text -> (Text, Text) -> Property
 prop_pair k v p =
-  parseMaybe (const $ parsePair k v (printPair k v p)) () === Just p
+  (k /= v) ==>
+    parseMaybe (const $ parsePair k v (printPair k v p)) () === Just p
 
 return []
 tests :: IO Bool
