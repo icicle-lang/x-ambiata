@@ -27,7 +27,7 @@ data BracketResult a =
 -- with a value level fail, it will return the result of the finalizer.
 -- Finalizer:
 --  - Left indicates a value level fail.
---  - Right indicates that the finalizer has a value level success, and its results can be ingored.
+--  - Right indicates that the finalizer has a value level success, and its results can be ignored.
 --
 bracketF :: IO a -> (a -> IO (Either b c)) -> (a -> IO b) -> IO b
 bracketF a f g =
