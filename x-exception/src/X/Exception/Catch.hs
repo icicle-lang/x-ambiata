@@ -2,15 +2,47 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE RankNTypes #-}
 module X.Exception.Catch (
-    unsafeBracket
+    bracketF
+  , unsafeBracket
   , unsafeBracket_
   , unsafeFinally
   ) where
 
+import           Control.Applicative (pure, (<$>))
 import           Control.Monad (return)
 import           Control.Monad.Catch hiding (finally)
 
+import           Data.Either
 import           Data.Function
+
+import           System.IO
+
+
+data BracketResult a =
+    BracketOk a
+  | BracketFailedFinalizerOk SomeException
+  | BracketFailedFinalizerError a
+
+-- Bracket where you care about the output of the finalizer. If the finalizer fails
+-- with a value level fail, it will return the result of the finalizer.
+-- Finalizer:
+--  - Left indicates a value level fail.
+--  - Right indicates that the finalizer has a value level success, and its results can be ingored.
+--
+bracketF :: IO a -> (a -> IO (Either b c)) -> (a -> IO b) -> IO b
+bracketF a f g =
+  mask $ \restore -> do
+    a' <- a
+    x <- restore (BracketOk <$> g a') `catchAll`
+           (\ex -> either BracketFailedFinalizerError (const $ BracketFailedFinalizerOk ex) <$> f a')
+    case x of
+      BracketFailedFinalizerOk ex ->
+        throwM ex
+      BracketFailedFinalizerError b ->
+        pure b
+      BracketOk b -> do
+        z <- f a'
+        pure $ either id (const b) z
 
 -- This is a bracket which can be used with monad transformers such as `EitherT` where
 -- you are not concerned with asyncronus errors

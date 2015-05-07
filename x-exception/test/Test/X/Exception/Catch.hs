@@ -13,6 +13,7 @@ import           Data.Eq
 import           Data.Function
 import           Data.Bool
 import           Data.Text
+import           Data.Either
 
 import           Orphanarium.Core.IO
 
@@ -23,6 +24,18 @@ import           Test.QuickCheck
 import           Test.QuickCheck.Instances ()
 
 import           X.Exception.Catch
+
+prop_bracketF :: [Text] -> Text -> Property
+prop_bracketF l action = action /= "" ==> testIO $ do
+  let after' = \_ -> pure $ Right ()
+  let action' = (\l' -> pure $ action : l')
+  (=== action : l) <$> bracketF (pure l) after' action'
+
+prop_bracketF_failure :: [Text] -> Text -> Text -> Property
+prop_bracketF_failure l action failure = action /= "" ==> testIO $ do
+  let after' = \_ -> pure $ Left failure
+  let action' = (\_ -> pure action)
+  (=== failure) <$> bracketF (pure l) after' action'
 
 prop_bracket :: [Text] -> Text -> Text -> Property
 prop_bracket l final action = final /= "" && action /= "" ==> testIO $ do
@@ -39,7 +52,6 @@ prop_bracket_catch l final = final /= "" ==> testIO $ do
   let action' = const $ throwM (userError "")
   _ <- unsafeBracket (return r) after' action' `catchIOError` (const $ return ())
   (=== final : l) <$> readIORef r
-
 
 prop_bracket_ :: Text -> Text -> Text -> Property
 prop_bracket_ before action after = testIO $ do
