@@ -11,7 +11,7 @@ import           Data.Function
 import           Data.Bool
 import           Data.Ord
 
-import           Orphanarium.Lens
+import           Disorder.Lens
 
 import           Prelude (div)
 

@@ -8,7 +8,7 @@ import           Data.Aeson
 import           Data.Aeson.Types
 import           Data.Text as T
 
-import           Orphanarium.Aeson
+import           Disorder.Aeson
 
 import           System.IO ()
 

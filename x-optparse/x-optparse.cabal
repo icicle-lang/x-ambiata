@@ -44,7 +44,7 @@ test-suite test
                      , attoparsec
                      , either
                      , optparse-applicative
-                     , orphanarium-core
+                     , disorder-core
                      , text
                      , transformers
                      , transformers-compat

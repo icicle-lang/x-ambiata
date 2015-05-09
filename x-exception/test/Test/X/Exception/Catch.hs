@@ -15,7 +15,7 @@ import           Data.Bool
 import           Data.Text
 import           Data.Either
 
-import           Orphanarium.Core.IO
+import           Disorder.Core.IO
 
 import           System.IO
 import           System.IO.Error hiding (catchIOError)
