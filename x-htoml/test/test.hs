@@ -1,10 +1,10 @@
-import           Orphanarium.Core.Main
+import           Disorder.Core.Main
 
 import qualified X.Test.Text.Toml
 
 
 main :: IO ()
 main =
-  orphanariumMain [
+  disorderMain [
       X.Test.Text.Toml.tests
     ]

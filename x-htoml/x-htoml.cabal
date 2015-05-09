@@ -41,8 +41,8 @@ test-suite test
   build-depends:
                        base                            >= 3          && < 5
                      , htoml
-                     , orphanarium-core
-                     , orphanarium-lens
+                     , disorder-core
+                     , disorder-lens
                      , text
                      , QuickCheck                      == 2.7.*
                      , quickcheck-instances            == 0.3.*

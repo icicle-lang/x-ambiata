@@ -40,8 +40,8 @@ test-suite test
   build-depends:
                        aeson
                      , base
-                     , orphanarium-aeson
-                     , orphanarium-core
+                     , disorder-aeson
+                     , disorder-core
                      , QuickCheck                      == 2.7.*
                      , quickcheck-instances            == 0.3.*
                      , text

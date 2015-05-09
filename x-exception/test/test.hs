@@ -1,9 +1,9 @@
-import           Orphanarium.Core.Main
+import           Disorder.Core.Main
 
 import qualified Test.X.Exception.Catch
 
 main :: IO ()
 main =
-  orphanariumMain [
+  disorderMain [
       Test.X.Exception.Catch.tests
     ]

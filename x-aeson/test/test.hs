@@ -1,8 +1,8 @@
-import           Orphanarium.Core.Main
+import           Disorder.Core.Main
 import qualified X.Test.Data.Aeson
 
 main :: IO ()
 main =
-  orphanariumMain [
+  disorderMain [
       X.Test.Data.Aeson.tests
     ]
