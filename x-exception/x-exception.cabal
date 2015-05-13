@@ -13,7 +13,7 @@ description:           x-exception.
 library
   build-depends:
                        base                            >= 3          && < 5
-                     , exceptions                      == 0.8.*
+                     , exceptions                      >= 0.6        && < 0.9
                      , text                            == 1.2.*
 
   ghc-options:
