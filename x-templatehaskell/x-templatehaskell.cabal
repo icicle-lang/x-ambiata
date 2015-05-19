@@ -1,0 +1,46 @@
+name:                  x-templatehaskell
+version:               0.0.1
+license:               AllRightsReserved
+author:                Ambiata <info@ambiata.com>
+maintainer:            Ambiata <info@ambiata.com>
+copyright:             (c) 2015 Ambiata.
+synopsis:              x-templatehaskell
+category:              x-templatehaskell
+cabal-version:         >= 1.8
+build-type:            Simple
+description:           x-templatehaskell.
+
+library
+  build-depends:
+                       base                            >= 3          && < 5
+                     , text                            == 1.2.*
+                     , template-haskell                >= 2.8
+
+  ghc-options:
+                       -Wall
+
+  hs-source-dirs:
+                       src
+
+
+  exposed-modules:
+                       X.Language.Haskell.TH
+
+test-suite test
+  type:                exitcode-stdio-1.0
+
+  main-is:             test.hs
+
+  ghc-options:         -Wall -threaded -O2
+
+  hs-source-dirs:
+                       test
+
+  build-depends:
+                       base                            >= 3          && < 5
+                     , x-templatehaskell
+                     , disorder-core
+                     , text                            == 1.2.*
+                     , QuickCheck                      == 2.7.*
+                     , quickcheck-instances            == 0.3.*
+                     , template-haskell                >= 2.8
