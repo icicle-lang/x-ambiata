@@ -47,22 +47,22 @@ bracketF a f g =
 -- Exception and `Left` safe version of bracketEitherT.
 --
 bracketEitherT' :: EitherT e IO a -> (a -> EitherT e IO c) -> (a -> EitherT e IO b) -> EitherT e IO b
-bracketEitherT' aquire release run =
+bracketEitherT' acquire release run =
   EitherT $ bracketF
-    (runEitherT aquire)
+    (runEitherT acquire)
     (\r -> case r of
       Left _ ->
-        -- Aquire failed, we have nothing to release
+        -- Acquire failed, we have nothing to release
         pure . Right $ ()
       Right r' ->
-        -- Aquire succeeded, we need to try and release
+        -- Acquire succeeded, we need to try and release
         runEitherT (release r') >>= \x -> pure $ case x of
           Left err -> Left (Left (err))
           Right _ -> Right ())
     (\r -> case r of
       Left err ->
-        -- Aquire failed, we have nothing to run
+        -- Acquire failed, we have nothing to run
         pure . Left $ err
       Right r' ->
-        -- Aquire succeeded, we can do some work
+        -- Acquire succeeded, we can do some work
         runEitherT (run r'))
