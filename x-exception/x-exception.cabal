@@ -13,8 +13,10 @@ description:           x-exception.
 library
   build-depends:
                        base                            >= 3          && < 5
+                     , either                          == 4.3.*
                      , exceptions                      >= 0.6        && < 0.9
                      , text                            == 1.2.*
+                     , transformers                    >= 0.3     && < 0.5
 
   ghc-options:
                        -Wall
@@ -38,9 +40,11 @@ test-suite test
 
   build-depends:
                        base                            >= 3          && < 5
-                     , x-exception
                      , disorder-core
+                     , either
+                     , exceptions                      == 0.8.*
                      , text                            == 1.2.*
+                     , transformers
                      , QuickCheck                      == 2.7.*
                      , quickcheck-instances            == 0.3.*
-                     , exceptions                      == 0.8.*
+                     , x-exception

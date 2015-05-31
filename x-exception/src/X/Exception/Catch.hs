@@ -3,14 +3,13 @@
 {-# LANGUAGE RankNTypes #-}
 module X.Exception.Catch (
     bracketF
-  , unsafeBracket
-  , unsafeBracket_
-  , unsafeFinally
+  , bracketEitherT
   ) where
 
 import           Control.Applicative (pure, (<$>))
-import           Control.Monad (return)
+import           Control.Monad ((>>=))
 import           Control.Monad.Catch hiding (finally)
+import           Control.Monad.Trans.Either
 
 import           Data.Either
 import           Data.Function
@@ -44,19 +43,23 @@ bracketF a f g =
         z <- f a'
         pure $ either id (const b) z
 
--- This is a bracket which can be used with monad transformers such as `EitherT` where
--- you are not concerned with asyncronus errors
-unsafeBracket :: MonadCatch m => m a -> (a -> m b) -> (a -> m c) -> m c
-unsafeBracket resource finalizer action = do
-  a <- resource
-  r' <- action a `onException` finalizer a
-  _ <- finalizer a
-  return r'
-
-unsafeBracket_ :: MonadCatch m => m a -> m b -> m c -> m c
-unsafeBracket_ before after action =
-  unsafeBracket before (const after) (const action)
-
-unsafeFinally :: MonadCatch m => m a -> m b -> m a
-unsafeFinally action finalizer =
-  unsafeBracket_ (return ()) finalizer action
+bracketEitherT :: EitherT e IO a -> (a -> EitherT e IO c) -> (a -> EitherT e IO b) -> EitherT e IO b
+bracketEitherT aquire release run =
+  EitherT $ bracketF
+    (runEitherT aquire)
+    (\r -> case r of
+      Left _ ->
+        -- Aquire failed, we have nothing to release
+        pure . Right $ ()
+      Right r' ->
+        -- Aquire succeeded, we need to try and release
+        runEitherT (release r') >>= \x -> pure $ case x of
+          Left err -> Left (Left (err))
+          Right _ -> Right ())
+    (\r -> case r of
+      Left err ->
+        -- Aquire failed, we have nothing to run
+        pure . Left $ err
+      Right r' ->
+        -- Aquire succeeded, we can do some work
+        runEitherT (run r'))

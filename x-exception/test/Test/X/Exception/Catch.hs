@@ -4,9 +4,10 @@
 {-# LANGUAGE TemplateHaskell #-}
 module Test.X.Exception.Catch (tests) where
 
-import           Control.Monad (return)
+import           Control.Monad
 import           Control.Applicative
-import           Control.Monad.Catch hiding (finally)
+import           Control.Monad.Trans.Either
+import           Control.Monad.IO.Class
 
 import           Data.IORef
 import           Data.Eq
@@ -14,11 +15,11 @@ import           Data.Function
 import           Data.Bool
 import           Data.Text
 import           Data.Either
+import           Data.Monoid
 
 import           Disorder.Core.IO
 
 import           System.IO
-import           System.IO.Error hiding (catchIOError)
 
 import           Test.QuickCheck
 import           Test.QuickCheck.Instances ()
@@ -37,55 +38,39 @@ prop_bracketF_failure l action failure = action /= "" ==> testIO $ do
   let action' = (\_ -> pure action)
   (=== failure) <$> bracketF (pure l) after' action'
 
-prop_bracket :: [Text] -> Text -> Text -> Property
-prop_bracket l final action = final /= "" && action /= "" ==> testIO $ do
-  r <- newIORef l
-  let after' = (flip modifyIORef (final :))
-  let action' = (flip modifyIORef (action :))
-  unsafeBracket (return r) after' action'
-  (=== final : action : l) <$> readIORef r
+prop_bracketEitherT :: Text -> Text -> Text -> Property
+prop_bracketEitherT a b c = testIO $ do
+  ref <- newIORef ""
+  let before' = swazzle ref a
+  let after' = \_ -> swazzle ref c
+  let action' = \_ -> swazzle ref b
+  _ <- runEitherT $ bracketEitherT before' after' action'
+  f <- readIORef ref
+  pure $ f === (a <> b <> c)
 
-prop_bracket_catch :: [Text] -> Text -> Property
-prop_bracket_catch l final = final /= "" ==> testIO $ do
-  r <- newIORef l
-  let after' = (flip modifyIORef (final :))
-  let action' = const $ throwM (userError "")
-  _ <- unsafeBracket (return r) after' action' `catchIOError` (const $ return ())
-  (=== final : l) <$> readIORef r
+prop_bracketEitherT_action_failed :: Text -> Text -> Text -> Property
+prop_bracketEitherT_action_failed a b c = testIO $ do
+  ref <- newIORef ""
+  let before' = swazzle ref a
+  let after' = \_ -> swazzle ref c
+  let action' = \_ -> swazzle ref b >> left ()
+  _ <- runEitherT $ bracketEitherT before' after' action'
+  f <- readIORef ref
+  pure $ f === (a <> b <> c)
 
-prop_bracket_ :: Text -> Text -> Text -> Property
-prop_bracket_ before action after = testIO $ do
-  r <- newIORef ""
-  let before' = writeIORef r before
-  let action' = writeIORef r action
-  let after' = writeIORef r after
-  unsafeBracket_ before' after' action'
-  (=== after) <$> readIORef r
+prop_bracketEitherT_aquire_failed :: Text -> Text -> Text -> Property
+prop_bracketEitherT_aquire_failed a b c = testIO $ do
+  ref <- newIORef ""
+  let before' = swazzle ref a >> left ()
+  let after' = \_ -> swazzle ref c
+  let action' = \_ -> swazzle ref b
+  _ <- runEitherT $ bracketEitherT before' after' action'
+  f <- readIORef ref
+  pure $ f === a
 
-prop_bracket__catch :: Text -> Text -> Text -> Property
-prop_bracket__catch initial before after = testIO $ do
-  r <- newIORef initial
-  let before' = writeIORef r before
-  let action' = throwM (userError "")
-  let after' = writeIORef r after
-  unsafeBracket_ before' after' action' `catchIOError` (const $ return ())
-  (=== after) <$> readIORef r
-
-prop_finally :: Text -> Text -> Text -> Property
-prop_finally initial action after = testIO $ do
-  r <- newIORef initial
-  let action' = writeIORef r action
-  let after' = writeIORef r after
-  unsafeFinally action' after'
-  (=== after) <$> readIORef r
-
-prop_finally_catch :: Text -> Text -> Property
-prop_finally_catch initial after = testIO $ do
-  r <- newIORef initial
-  let action' = throwM (userError "")
-  let after' = writeIORef r after
-  unsafeFinally action' after' `catchIOError` (const $ return ())
-  (=== after) <$> readIORef r
+swazzle :: IORef Text -> Text -> EitherT () IO ()
+swazzle ref t =
+  liftIO $ modifyIORef ref (<> t)
 
 return []
 tests :: IO Bool
