@@ -44,7 +44,7 @@ prop_bracketEitherT a b c = testIO $ do
   let before' = swazzle ref a
   let after' = \_ -> swazzle ref c
   let action' = \_ -> swazzle ref b
-  _ <- runEitherT $ bracketEitherT before' after' action'
+  _ <- runEitherT $ bracketEitherT' before' after' action'
   f <- readIORef ref
   pure $ f === (a <> b <> c)
 
@@ -54,7 +54,7 @@ prop_bracketEitherT_action_failed a b c = testIO $ do
   let before' = swazzle ref a
   let after' = \_ -> swazzle ref c
   let action' = \_ -> swazzle ref b >> left ()
-  _ <- runEitherT $ bracketEitherT before' after' action'
+  _ <- runEitherT $ bracketEitherT' before' after' action'
   f <- readIORef ref
   pure $ f === (a <> b <> c)
 
@@ -64,7 +64,7 @@ prop_bracketEitherT_aquire_failed a b c = testIO $ do
   let before' = swazzle ref a >> left ()
   let after' = \_ -> swazzle ref c
   let action' = \_ -> swazzle ref b
-  _ <- runEitherT $ bracketEitherT before' after' action'
+  _ <- runEitherT $ bracketEitherT' before' after' action'
   f <- readIORef ref
   pure $ f === a
 

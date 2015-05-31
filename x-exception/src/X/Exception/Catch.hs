@@ -3,7 +3,7 @@
 {-# LANGUAGE RankNTypes #-}
 module X.Exception.Catch (
     bracketF
-  , bracketEitherT
+  , bracketEitherT'
   ) where
 
 import           Control.Applicative (pure, (<$>))
@@ -43,8 +43,11 @@ bracketF a f g =
         z <- f a'
         pure $ either id (const b) z
 
-bracketEitherT :: EitherT e IO a -> (a -> EitherT e IO c) -> (a -> EitherT e IO b) -> EitherT e IO b
-bracketEitherT aquire release run =
+--
+-- Exception and `Left` safe version of bracketEitherT.
+--
+bracketEitherT' :: EitherT e IO a -> (a -> EitherT e IO c) -> (a -> EitherT e IO b) -> EitherT e IO b
+bracketEitherT' aquire release run =
   EitherT $ bracketF
     (runEitherT aquire)
     (\r -> case r of
