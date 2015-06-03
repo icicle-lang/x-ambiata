@@ -6,6 +6,7 @@ module X.Options.Applicative (
   , command'
   , dispatch
   , orDie
+  , orDieWithCode
   ) where
 
 import           Control.Applicative
