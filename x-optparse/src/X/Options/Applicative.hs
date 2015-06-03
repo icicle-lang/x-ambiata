@@ -25,6 +25,7 @@ import           Options.Applicative.Types
 import           System.IO
 import           System.Environment (getArgs)
 import           System.Exit
+import           Prelude (Int)
 
 -- | Turn an attoparsec parser into a ReadM
 pOption :: A.Parser a -> ReadM a
@@ -47,6 +48,11 @@ dispatch p = getArgs >>= \x -> case x of
   [] -> customExecParser (prefs showHelpOnError)  (info (p <**> helper) idm)
   _  -> execParser (info (p <**> helper) idm)
 
+-- | orDieWithCode with an exit code of 1 in case of an error
+--
+orDie :: (e -> Text) -> EitherT e IO a -> IO a
+orDie = orDieWithCode 1
+
 -- | An idiom for failing hard on EitherT errors.
 --
 -- *This really dies*. There is no other way to say it.
@@ -55,7 +61,7 @@ dispatch p = getArgs >>= \x -> case x of
 -- the only valid place to actually exit like this. Be appropriately
 -- wary.
 --
-orDie :: (e -> Text) -> EitherT e IO a -> IO a
-orDie render e =
+orDieWithCode :: Int -> (e -> Text) -> EitherT e IO a -> IO a
+orDieWithCode code render e =
   runEitherT e >>=
-    either (\err -> (hPutStrLn stderr . T.unpack . render) err >> exitFailure) pure
+    either (\err -> (hPutStrLn stderr . T.unpack . render) err >> exitWith (ExitFailure code)) pure
