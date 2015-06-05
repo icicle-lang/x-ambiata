@@ -14,10 +14,10 @@ library
   build-depends:
                        base                            >= 3          && < 5
                      , attoparsec                      == 0.12.*
-                     , either                          == 4.3.*
+                     , either                          >= 4.3        && < 4.5
                      , optparse-applicative            == 0.11.*
                      , text                            == 1.2.*
-                     , transformers                    >= 0.3     && < 0.5
+                     , transformers                    >= 0.3        && < 0.5
 
   ghc-options:
                        -Wall
@@ -42,7 +42,7 @@ test-suite test
   build-depends:
                        base                            >= 3          && < 5
                      , attoparsec
-                     , either
+                     , either                          >= 4.3        && < 4.5
                      , optparse-applicative
                      , disorder-core
                      , text

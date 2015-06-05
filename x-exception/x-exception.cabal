@@ -13,7 +13,7 @@ description:           x-exception.
 library
   build-depends:
                        base                            >= 3          && < 5
-                     , either                          == 4.3.*
+                       , either                        >= 4.3        && < 4.5
                      , exceptions                      >= 0.6        && < 0.9
                      , text                            == 1.2.*
                      , transformers                    >= 0.3     && < 0.5
@@ -41,7 +41,7 @@ test-suite test
   build-depends:
                        base                            >= 3          && < 5
                      , disorder-core
-                     , either
+                     , either                          >= 4.3        && < 4.5
                      , exceptions                      == 0.8.*
                      , text                            == 1.2.*
                      , transformers
