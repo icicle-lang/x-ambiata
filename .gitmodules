@@ -1,3 +1,6 @@
 [submodule "lib/disorder"]
 	path = lib/disorder
 	url = git@github.com:ambiata/disorder.hs
+[submodule "x-optparse/lib/p"]
+	path = x-optparse/lib/p
+	url = git@github.com:ambiata/p

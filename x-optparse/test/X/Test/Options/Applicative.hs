@@ -1,6 +1,7 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 module X.Test.Options.Applicative where
 
 import           Control.Applicative
@@ -16,14 +17,17 @@ import           Data.Bool
 import           Data.Int
 import           Data.Text as T
 
+import           Options.Applicative
 import           Options.Applicative.Types
+import           X.Options.Applicative
+import           X.Options.Applicative.Data
+
+import           P
 
 import           System.IO
 
 import           Test.QuickCheck
 import           Test.QuickCheck.Instances ()
-
-import           X.Options.Applicative
 
 prop_pOption :: Text -> Property
 prop_pOption t =
@@ -37,6 +41,13 @@ prop_textRead :: Text -> Property
 prop_textRead t =
   -- Converting to Maybe because ParseError doesn't have an Eq instance defined
   (either (const Nothing) Just . runExcept . runReaderT (unReadM textRead) $ T.unpack t) === Just t
+
+prop_safeCommand :: Text -> Property
+prop_safeCommand t =
+  let arg = fmap T.pack $ argument str $ metavar "argument"
+      name = T.filter (/= '-') t
+      parser = safeCommand arg
+  in  getParseResult (execParserPure (prefs idm) (info parser idm) [T.unpack name, "--dry-run"]) === Just (RunCommand DryRun name)
 
 prop_orDie :: Int -> Property
 prop_orDie n =
