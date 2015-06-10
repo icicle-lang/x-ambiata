@@ -7,6 +7,7 @@ module X.Options.Applicative (
   , dispatch
   , orDie
   , orDieWithCode
+  , safeCommand
   ) where
 
 import           Control.Applicative
@@ -22,11 +23,19 @@ import           Data.Text as T
 
 import           Options.Applicative
 import           Options.Applicative.Types
-
+import           X.Options.Applicative.Data
 import           System.IO
 import           System.Environment (getArgs)
 import           System.Exit
 import           Prelude (Int)
+
+
+-- | Turn a Parser for a command of type a into a safe command
+--   with a dry-run mode and a version flag
+safeCommand :: Parser a -> Parser (SafeCommand a)
+safeCommand commandParser =
+  Version <$ flag' () (short 'v' <> long "version" <> help "Version information")
+  <|> RunCommand <$> flag RealRun DryRun (long "dry-run" <> hidden) <*> commandParser
 
 -- | Turn an attoparsec parser into a ReadM
 pOption :: A.Parser a -> ReadM a

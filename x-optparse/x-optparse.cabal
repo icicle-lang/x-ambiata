@@ -28,6 +28,7 @@ library
 
   exposed-modules:
                        X.Options.Applicative
+                       X.Options.Applicative.Data
 
 test-suite test
   type:                exitcode-stdio-1.0
@@ -45,7 +46,8 @@ test-suite test
                      , either                          >= 4.3        && < 4.5
                      , optparse-applicative
                      , disorder-core
-                     , text
+                     , p
+                     , text                            == 1.2.*
                      , transformers
                      , transformers-compat
                      , QuickCheck                      == 2.7.*
