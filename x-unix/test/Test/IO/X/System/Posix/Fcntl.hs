@@ -5,16 +5,39 @@ module Test.IO.X.System.Posix.Fcntl where
 
 import           Data.Bool
 
+import           Control.Applicative
 import           Control.Monad
+
 import           Data.Function
+import           Data.Text
+
+import           Disorder.Core.IO
+import           Disorder.Corpus
 
 import           System.IO
+import           System.FilePath
+import           System.IO.Temp
 
 import           Test.QuickCheck
+--import           System.Posix.IO
+
+--import           X.System.Posix.Fcntl
 
 prop_foo :: Bool -> Property
 prop_foo b =
   b === b
+
+prop_allocate :: Property
+prop_allocate = forAll (elements southpark) $ \s -> testIO $ do
+  withSystemTempDirectory "fcntl" $ \tmp -> do
+    let file = tmp </> unpack s
+    withFile file WriteMode $ \_ -> do
+--      d <- handleToFd h
+      pure ()
+--      fileAllocate d 0 100
+    r <- withFile file ReadMode $ \h ->
+      hFileSize h
+    pure $ r === 100
 
 return []
 tests :: IO Bool

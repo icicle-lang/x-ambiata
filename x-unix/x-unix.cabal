@@ -52,6 +52,9 @@ test-suite test-io
   build-depends:
                        base                            >= 3          && < 5
                      , x-unix
+                     , unix                            == 2.7.*
+                     , temporary
+                     , text
                      , disorder-core
                      , disorder-corpus
                      , filepath                        == 1.3.*
