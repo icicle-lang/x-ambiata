@@ -6,7 +6,7 @@
 
 #include <fcntl.h>
 
-
+#if darwin_HOST_OS
 int xox(int filedes, off_t fst_offset, off_t fst_length) {
     fstore_t bar;
     bar.fst_flags = F_ALLOCATEALL;
@@ -15,3 +15,4 @@ int xox(int filedes, off_t fst_offset, off_t fst_length) {
     bar.fst_length = fst_length;
     return (fcntl(filedes, F_PREALLOCATE, &bar));
 }
+#endif
