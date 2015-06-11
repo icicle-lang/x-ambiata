@@ -1,9 +1,6 @@
 
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
 
-#include <fcntl.h>
-
-#include "HsFFI.h"
+int xox(int, unsigned int, int, off_t, off_t, off_t);

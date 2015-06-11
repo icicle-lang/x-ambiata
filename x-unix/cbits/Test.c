@@ -1,7 +1,13 @@
 #include "Test.h"
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdint.h>
 
-int __xox(int filedes, u_int32_t fst_flags, int fst_posmode, off_t fst_offset, off_t fst_length, off_t fst_bytesalloc) {
+#include <fcntl.h>
+
+
+int xox(int filedes, u_int32_t fst_flags, int fst_posmode, off_t fst_offset, off_t fst_length, off_t fst_bytesalloc) {
     fstore_t bar;
     bar.fst_flags = fst_flags;
     bar.fst_posmode = fst_posmode;
