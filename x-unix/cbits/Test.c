@@ -6,7 +6,7 @@
 
 #include <fcntl.h>
 
-
+#ifdef HAVE_FCNTL_H
 int xox(int filedes, u_int32_t fst_flags, int fst_posmode, off_t fst_offset, off_t fst_length, off_t fst_bytesalloc) {
     fstore_t bar;
     bar.fst_flags = fst_flags;
@@ -16,3 +16,4 @@ int xox(int filedes, u_int32_t fst_flags, int fst_posmode, off_t fst_offset, off
     bar.fst_bytesalloc = fst_bytesalloc;
     return (fcntl(filedes, 42, bar));
 }
+#endif

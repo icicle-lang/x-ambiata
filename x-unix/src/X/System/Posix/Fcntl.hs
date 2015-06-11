@@ -8,12 +8,6 @@ import           Data.Word
 
 import           Foreign.C
 import           System.Posix.Types
--- ifdef
-import           GHC.Generics (Generic)
-import           Foreign.Ptr
-import           Foreign.CStorable
-import           Foreign.Storable
-import           Foreign.Marshal.Utils
 
 -- | Performs @posix_fallocate(2)@ operation on file-descriptor.
 --
@@ -35,7 +29,7 @@ foreign import capi safe "fcntl.h posix_fallocate"
 fileAllocate fd off len = do
   throwErrnoIfMinus1_ "fileAllocate" (c_xox (fromIntegral fd) 4 3 (fromIntegral off) (fromIntegral len) 0)
 
-foreign import ccall safe "Test.h xoxq"
+foreign import ccall safe "Test.h xox"
   c_xox :: CInt -> Word32 -> CInt -> COff -> COff -> COff -> IO CInt
 
 #endif
