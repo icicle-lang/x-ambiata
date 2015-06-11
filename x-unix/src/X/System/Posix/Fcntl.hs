@@ -4,8 +4,6 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 module X.System.Posix.Fcntl where
 
-import           Data.Word
-
 import           Foreign.C
 import           System.Posix.Types
 
@@ -27,9 +25,9 @@ foreign import capi safe "fcntl.h posix_fallocate"
 #else
 
 fileAllocate fd off len = do
-  throwErrnoIfMinus1_ "fileAllocate" (c_xox (fromIntegral fd) 4 3 (fromIntegral off) (fromIntegral len) 0)
+  throwErrnoIfMinus1_ "fileAllocatezz" (c_xox (fromIntegral fd) (fromIntegral off) (fromIntegral len))
 
 foreign import ccall safe "Test.h xox"
-  c_xox :: CInt -> Word32 -> CInt -> COff -> COff -> COff -> IO CInt
+  c_xox :: CInt -> COff -> COff -> IO CInt
 
 #endif
