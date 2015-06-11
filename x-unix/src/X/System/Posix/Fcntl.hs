@@ -15,6 +15,8 @@ import           Foreign.CStorable
 import           Foreign.Storable
 import           Foreign.Marshal.Utils
 
+#include "Test.h"
+
 -- | Performs @posix_fallocate(2)@ operation on file-descriptor.
 --
 -- Throws 'IOError' (\"unsupported operation\") if platform does not
@@ -31,9 +33,11 @@ fileAllocate fd off len = do
 foreign import capi safe "fcntl.h posix_fallocate"
   c_posix_fallocate :: CInt -> COff -> COff -> IO CInt
 #else
+
 fileAllocate fd off len = do
-  f <- new (Fstore 4 3 (fromIntegral off) (fromIntegral len) 0)
-  throwErrnoIfMinus1_ "fileAllocate" (c_fcntl (fromIntegral fd) (fromIntegral (42 :: Int)) f)
+--  let f = (Fstore 4 3 (fromIntegral off) (fromIntegral len) 0)
+--  throwErrnoIfMinus1_ "fileAllocate" (c_xox (fromIntegral fd) (fromIntegral (42 :: Int)) f)
+  throwErrnoIfMinus1_ "fileAllocate" (c_xox (fromIntegral fd) 4 3 (fromIntegral off) (fromIntegral len) 0)
 
 data Fstore = Fstore {
     fst_flags :: Word32
@@ -51,7 +55,7 @@ instance Storable Fstore where
   poke = cPoke
   peek = cPeek
 
-foreign import capi safe "fcntl.h fcntl"
-  c_fcntl :: CInt -> CInt -> Ptr Fstore -> IO CInt
+foreign import capi safe "Test.h Test"
+  c_xox :: CInt -> Word32 -> CInt -> COff -> COff -> COff -> IO CInt
 
 #endif

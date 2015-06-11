@@ -10,6 +10,9 @@ cabal-version:         >= 1.8
 build-type:            Simple
 description:           x-unix.
 
+extra-source-files:
+  include/Test.h
+
 library
   build-depends:
                        base                            >= 3          && < 5
@@ -26,3 +29,12 @@ library
 
   exposed-modules:
                        X.System.Posix.Fcntl
+
+  include-dirs: include
+  includes:
+    Test.h
+  install-includes:
+    Test.h
+
+  c-sources:
+    cbits/Test.c
