@@ -21,16 +21,18 @@ import           X.Data.Aeson
 data Foo = Foo { foo :: Maybe Text } deriving (Eq, Show)
 
 instance Arbitrary Foo where
-  arbitrary = Foo <$> arbitrary
+  arbitrary =
+    Foo <$> arbitrary
 
 instance ToJSON Foo where
  toJSON (Foo f) =
    object $ "foo" .=? f
 
 instance FromJSON Foo where
-  parseJSON (Object o) = Foo
-    <$> o .:? "foo"
-  parseJSON _ = fail "Invalid JSON for Foo"
+  parseJSON (Object o) =
+    Foo <$> o .:? "foo"
+  parseJSON _ =
+    fail "Invalid JSON for Foo"
 
 prop_maybe :: Foo -> Property
 prop_maybe = jsonProp
@@ -43,6 +45,14 @@ prop_pair :: Text -> Text -> (Text, Text) -> Property
 prop_pair k v p =
   (k /= v) ==>
     parseMaybe (const $ parsePair k v (printPair k v p)) () === Just p
+
+prop_asText :: Text -> Property
+prop_asText t =
+  asTextWith (toJSON :: Text -> Value) t === asText t
+
+prop_as :: Text -> Property
+prop_as t =
+  asWith (parseJSON :: Value -> Parser Text) t === as t
 
 return []
 tests :: IO Bool
