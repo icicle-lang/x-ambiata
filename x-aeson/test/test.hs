@@ -1,8 +1,8 @@
 import           Disorder.Core.Main
-import qualified X.Test.Data.Aeson
+import qualified Test.X.Data.Aeson
 
 main :: IO ()
 main =
   disorderMain [
-      X.Test.Data.Aeson.tests
+      Test.X.Data.Aeson.tests
     ]

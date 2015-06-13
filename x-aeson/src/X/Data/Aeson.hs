@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module X.Data.Aeson (
-    (.=?)
+    module X
+  , (.=?)
   , asText
   , as
   , asTextWith
@@ -11,8 +12,8 @@ module X.Data.Aeson (
 
 import           Control.Applicative
 
-import           Data.Aeson
-import           Data.Aeson.Types
+import           Data.Aeson as X
+import           Data.Aeson.Types as X
 import           Data.Monoid
 import           Data.Text
 import           Data.Text.Encoding (decodeUtf8, encodeUtf8)

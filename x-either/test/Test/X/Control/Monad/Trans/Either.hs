@@ -15,7 +15,7 @@ prop_firstEitherT_id s n =
   in  firstEitherT id l === l .&&.
       firstEitherT id r === r
 
-prop_firstEitherT_map :: (Fun String Char) -> String -> Property
+prop_firstEitherT_map :: Fun String Char -> String -> Property
 prop_firstEitherT_map fun s =
   let f = apply fun
       l = left s :: EitherT String Identity Int
@@ -27,7 +27,7 @@ prop_secondEitherT_id s n =
   in  secondEitherT id l === l .&&.
       secondEitherT id r === r
 
-prop_secondEitherT_map :: (Fun Int Char) -> Int -> Property
+prop_secondEitherT_map :: Fun Int Char -> Int -> Property
 prop_secondEitherT_map fun n =
   let f = apply fun
       r = right n :: EitherT String Identity Int

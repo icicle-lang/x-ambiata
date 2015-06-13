@@ -1,7 +1,7 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE RankNTypes #-}
-module X.Exception.Catch (
+module X.Control.Monad.Catch (
     bracketF
   , bracketEitherT'
   ) where
@@ -57,7 +57,7 @@ bracketEitherT' acquire release run =
       Right r' ->
         -- Acquire succeeded, we need to try and release
         runEitherT (release r') >>= \x -> pure $ case x of
-          Left err -> Left (Left (err))
+          Left err -> Left (Left err)
           Right _ -> Right ())
     (\r -> case r of
       Left err ->

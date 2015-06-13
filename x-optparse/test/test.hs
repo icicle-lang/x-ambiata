@@ -1,8 +1,10 @@
 import           Disorder.Core.Main
-import qualified X.Test.Options.Applicative
+
+import qualified Test.X.Options.Applicative
+
 
 main :: IO ()
 main =
   disorderMain [
-      X.Test.Options.Applicative.tests
+      Test.X.Options.Applicative.tests
     ]

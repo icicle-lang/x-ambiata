@@ -1,7 +1,6 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE TemplateHaskell #-}
 module Test.X.Framework.Language.Haskell.TH (
     qint
   , qint'
@@ -19,7 +18,9 @@ import           Language.Haskell.TH.Quote
 import           X.Language.Haskell.TH
 
 qint :: QuasiQuoter
-qint = qmaybe (\t -> (readMaybe :: String -> Maybe Int) (T.unpack t))
+qint =
+  qmaybe (\t -> (readMaybe :: String -> Maybe Int) (T.unpack t))
 
 qint' :: QuasiQuoter
-qint' = qeither (\t -> (readEither :: String -> Either String Int) (T.unpack t))
+qint' =
+  qeither (\t -> (readEither :: String -> Either String Int) (T.unpack t))

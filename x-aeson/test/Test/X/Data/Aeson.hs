@@ -1,11 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
-module X.Test.Data.Aeson where
+module Test.X.Data.Aeson where
 
 import           Control.Applicative
 
-import           Data.Aeson
-import           Data.Aeson.Types
 import           Data.Text as T
 
 import           Disorder.Aeson
@@ -18,7 +16,9 @@ import           Test.QuickCheck.Instances ()
 import           X.Data.Aeson
 
 
-data Foo = Foo { foo :: Maybe Text } deriving (Eq, Show)
+newtype Foo = Foo {
+    foo :: Maybe Text
+  } deriving (Eq, Show)
 
 instance Arbitrary Foo where
   arbitrary =
@@ -35,7 +35,8 @@ instance FromJSON Foo where
     fail "Invalid JSON for Foo"
 
 prop_maybe :: Foo -> Property
-prop_maybe = jsonProp
+prop_maybe =
+  jsonProp
 
 prop_text :: Foo -> Property
 prop_text f =
