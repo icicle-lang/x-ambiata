@@ -1,0 +1,38 @@
+name:                  x-either
+version:               0.0.1
+license:               AllRightsReserved
+author:                Ambiata <info@ambiata.com>
+maintainer:            Ambiata <info@ambiata.com>
+copyright:             (c) 2015 Ambiata.
+synopsis:              x-either.
+category:              Prelude
+cabal-version:         >= 1.8
+build-type:            Simple
+description:           x-either.
+
+library
+  build-depends:
+                          base                        >= 4.6        && < 5
+                        , either                      >= 4.3        && < 4.5
+
+
+  ghc-options:
+                       -Wall
+
+  hs-source-dirs:
+                       src
+
+
+  exposed-modules:
+                       X.Control.Monad.Trans.Either
+
+test-suite test
+  type:           exitcode-stdio-1.0
+  main-is:        test.hs
+  ghc-options:    -Wall -threaded -O2
+  hs-source-dirs: test
+  build-depends:       base
+                     , disorder-core
+                     , transformers                >= 0.3        && < 0.5
+                     , QuickCheck
+                     , x-either
