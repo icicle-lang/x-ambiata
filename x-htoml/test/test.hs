@@ -1,10 +1,10 @@
 import           Disorder.Core.Main
 
-import qualified X.Test.Text.Toml
+import qualified Test.X.Text.Toml
 
 
 main :: IO ()
 main =
   disorderMain [
-      X.Test.Text.Toml.tests
+      Test.X.Text.Toml.tests
     ]

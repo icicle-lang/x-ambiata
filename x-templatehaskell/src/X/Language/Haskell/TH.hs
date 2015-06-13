@@ -8,14 +8,13 @@ module X.Language.Haskell.TH (
 
 
 import           Control.Applicative (pure)
-import           Data.Either
-import           Data.Monoid ((<>))
-import           Data.Function (const, ($))
 
 import           Data.Data (Data)
-import           Data.Function ((.))
+import           Data.Either
+import           Data.Function (const, ($), (.))
 import           Data.Generics (extQ)
 import           Data.Maybe
+import           Data.Monoid ((<>))
 import           Data.String ( String )
 import qualified Data.Text as T
 
@@ -25,6 +24,7 @@ import           Language.Haskell.TH.Quote
 import qualified Prelude as P (error)
 
 import           Text.Show (Show, show)
+
 
 qmaybe :: (Data a) => (T.Text -> Maybe a) -> QuasiQuoter
 qmaybe parse = qparse $ \s ->

@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
-module X.Test.Text.Toml where
+module Test.X.Text.Toml where
 
 import           Control.Applicative
 import           Control.Monad

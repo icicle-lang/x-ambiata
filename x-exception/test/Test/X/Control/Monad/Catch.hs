@@ -2,20 +2,20 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TemplateHaskell #-}
-module Test.X.Exception.Catch (tests) where
+module Test.X.Control.Monad.Catch where
 
-import           Control.Monad
 import           Control.Applicative
-import           Control.Monad.Trans.Either
+import           Control.Monad
 import           Control.Monad.IO.Class
+import           Control.Monad.Trans.Either
 
-import           Data.IORef
+import           Data.Bool
+import           Data.Either
 import           Data.Eq
 import           Data.Function
-import           Data.Bool
-import           Data.Text
-import           Data.Either
+import           Data.IORef
 import           Data.Monoid
+import           Data.Text
 
 import           Disorder.Core.IO
 
@@ -24,18 +24,19 @@ import           System.IO
 import           Test.QuickCheck
 import           Test.QuickCheck.Instances ()
 
-import           X.Exception.Catch
+import           X.Control.Monad.Catch
+
 
 prop_bracketF :: [Text] -> Text -> Property
 prop_bracketF l action = action /= "" ==> testIO $ do
-  let after' = \_ -> pure $ Right ()
-  let action' = (\l' -> pure $ action : l')
+  let after' = const . pure $ Right ()
+  let action' = \l' -> pure $ action : l'
   (=== action : l) <$> bracketF (pure l) after' action'
 
 prop_bracketF_failure :: [Text] -> Text -> Text -> Property
 prop_bracketF_failure l action failure = action /= "" ==> testIO $ do
-  let after' = \_ -> pure $ Left failure
-  let action' = (\_ -> pure action)
+  let after' = const . pure $ Left failure
+  let action' = \_ -> pure action
   (=== failure) <$> bracketF (pure l) after' action'
 
 prop_bracketEitherT :: Text -> Text -> Text -> Property

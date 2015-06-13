@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-module X.Test.Options.Applicative where
+module Test.X.Options.Applicative where
 
 import           Control.Applicative
 import           Control.Monad
@@ -17,10 +17,7 @@ import           Data.Bool
 import           Data.Int
 import           Data.Text as T
 
-import           Options.Applicative
-import           Options.Applicative.Types
 import           X.Options.Applicative
-import           X.Options.Applicative.Data
 
 import           P
 

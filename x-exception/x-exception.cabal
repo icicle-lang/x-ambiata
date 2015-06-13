@@ -13,10 +13,10 @@ description:           x-exception.
 library
   build-depends:
                        base                            >= 3          && < 5
-                       , either                        >= 4.3        && < 4.5
+                     , either                          >= 4.3        && < 4.5
                      , exceptions                      >= 0.6        && < 0.9
                      , text                            == 1.2.*
-                     , transformers                    >= 0.3     && < 0.5
+                     , transformers                    >= 0.3        && < 0.5
 
   ghc-options:
                        -Wall
@@ -26,7 +26,7 @@ library
 
 
   exposed-modules:
-                       X.Exception.Catch
+                       X.Control.Monad.Catch
 
 test-suite test
   type:                exitcode-stdio-1.0

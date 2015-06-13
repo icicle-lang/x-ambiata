@@ -1,13 +1,18 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 module X.Options.Applicative (
-    pOption
+    module X
+  , RunType (..)
+  , SafeCommand (..)
+  , pOption
   , textRead
   , command'
   , dispatch
   , orDie
   , orDieWithCode
   , safeCommand
+  , versionFlag
+  , dryRunFlag
   ) where
 
 import           Control.Applicative
@@ -17,25 +22,31 @@ import           Control.Monad.Trans.Either
 
 import qualified Data.Attoparsec.Text as A
 import           Data.Either
+import           Data.Eq
+import           Data.Int (Int)
 import           Data.Function
 import           Data.String (String)
 import           Data.Text as T
 
-import           Options.Applicative
-import           Options.Applicative.Types
-import           X.Options.Applicative.Data
+import           Options.Applicative as X
+import           Options.Applicative.Types as X
+
 import           System.IO
 import           System.Environment (getArgs)
 import           System.Exit
-import           Prelude (Int)
+
+import           Text.Show
 
 
--- | Turn a Parser for a command of type a into a safe command
---   with a dry-run mode and a version flag
-safeCommand :: Parser a -> Parser (SafeCommand a)
-safeCommand commandParser =
-  Version <$ flag' () (short 'v' <> long "version" <> help "Version information")
-  <|> RunCommand <$> flag RealRun DryRun (long "dry-run" <> hidden) <*> commandParser
+data RunType =
+    DryRun
+  | RealRun
+  deriving (Eq, Show)
+
+data SafeCommand a =
+    Version
+  | RunCommand RunType a
+  deriving (Eq, Show)
 
 -- | Turn an attoparsec parser into a ReadM
 pOption :: A.Parser a -> ReadM a
@@ -75,3 +86,23 @@ orDieWithCode :: Int -> (e -> Text) -> EitherT e IO a -> IO a
 orDieWithCode code render e =
   runEitherT e >>=
     either (\err -> (hPutStrLn stderr . T.unpack . render) err >> exitWith (ExitFailure code)) pure
+
+-- | Turn a Parser for a command of type a into a safe command
+--   with a dry-run mode and a version flag
+safeCommand :: Parser a -> Parser (SafeCommand a)
+safeCommand commandParser =
+      Version <$ versionFlag
+  <|> RunCommand <$> dryRunFlag <*> commandParser
+
+versionFlag :: Parser ()
+versionFlag =
+  flag' () $
+       short 'v'
+    <> long "version"
+    <> help "Version information"
+
+dryRunFlag :: Parser RunType
+dryRunFlag =
+  flag RealRun DryRun $
+       long "dry-run"
+    <> hidden
