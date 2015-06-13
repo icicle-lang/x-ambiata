@@ -3,6 +3,8 @@ module X.Data.Aeson (
     (.=?)
   , asText
   , as
+  , asTextWith
+  , asWith
   , parsePair
   , printPair
   ) where
@@ -13,7 +15,6 @@ import           Data.Aeson
 import           Data.Aeson.Types
 import           Data.Monoid
 import           Data.Text
-
 import           Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import           Data.ByteString.Lazy (toStrict)
 
@@ -29,6 +30,16 @@ asText =
 as :: FromJSON a => Text -> Either Text a
 as =
   either (Left . pack) Right . eitherDecodeStrict . encodeUtf8
+
+asTextWith :: (a -> Value) -> a -> Text
+asTextWith from =
+  asText . from
+
+asWith :: (Value -> Parser a) -> Text -> Either Text a
+asWith to t =
+  as t >>= \a' -> case parse to a' of
+    Success a -> pure a
+    Error msg -> Left . pack $ msg
 
 parsePair :: Text -> Text -> Value -> Parser (Text, Text)
 parsePair k v (Object o) =
