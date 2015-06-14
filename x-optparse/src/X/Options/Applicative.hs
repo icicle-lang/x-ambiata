@@ -44,7 +44,7 @@ data RunType =
   deriving (Eq, Show)
 
 data SafeCommand a =
-    Version
+    VersionCommand
   | RunCommand RunType a
   deriving (Eq, Show)
 
@@ -91,7 +91,7 @@ orDieWithCode code render e =
 --   with a dry-run mode and a version flag
 safeCommand :: Parser a -> Parser (SafeCommand a)
 safeCommand commandParser =
-      Version <$ versionFlag
+      VersionCommand <$ versionFlag
   <|> RunCommand <$> dryRunFlag <*> commandParser
 
 versionFlag :: Parser ()
