@@ -1,0 +1,49 @@
+name:                  x-attoparsec
+version:               0.0.1
+license:               AllRightsReserved
+author:                Ambiata <info@ambiata.com>
+maintainer:            Ambiata <info@ambiata.com>
+copyright:             (c) 2015 Ambiata.
+synopsis:              x-attoparsec
+category:              x-attoparsec
+cabal-version:         >= 1.8
+build-type:            Simple
+description:           x-attoparsec.
+
+library
+  build-depends:
+                       attoparsec                      == 0.12.*
+                     , base                            >= 3          && < 5
+                     , bytestring                      == 0.10.*
+                     , p
+                     , text                            >= 1.1        && < 1.3
+
+  ghc-options:
+                       -Wall
+
+  hs-source-dirs:
+                       src
+
+
+  exposed-modules:
+                       X.Data.Attoparsec.ByteString
+
+test-suite test
+  type:                exitcode-stdio-1.0
+
+  main-is:             test.hs
+
+  ghc-options:         -Wall -threaded -O2
+
+  hs-source-dirs:
+                       test
+
+  build-depends:
+                       attoparsec
+                     , base
+                     , disorder-core
+                     , p
+                     , QuickCheck                      == 2.7.*
+                     , quickcheck-instances            == 0.3.*
+                     , text
+                     , x-attoparsec
