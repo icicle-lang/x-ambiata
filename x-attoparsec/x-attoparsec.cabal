@@ -27,6 +27,7 @@ library
 
   exposed-modules:
                        X.Data.Attoparsec.ByteString
+                       X.Data.Attoparsec.Text
 
 test-suite test
   type:                exitcode-stdio-1.0
