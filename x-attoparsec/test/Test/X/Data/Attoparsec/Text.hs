@@ -14,11 +14,19 @@ import           X.Data.Attoparsec.Text
 
 prop_positiveIntegerParserSuccess :: Positive Integer -> Property
 prop_positiveIntegerParserSuccess (Positive i) =
-  parseStringEither positiveIntegerParser (show i) === Right i
+  parseOnly positiveIntegerParser (T.pack . show $ i) === Right i
 
 prop_positiveIntegerParserFail :: String -> Property
 prop_positiveIntegerParserFail s =
-  parseStringEither positiveIntegerParser ('x' : show s) === Left "digit: Failed reading: satisfy"
+  parseOnly positiveIntegerParser ("x" <> (T.pack . show) s) === Left "digit: Failed reading: satisfy"
+
+prop_positiveIntParserSuccess :: Positive Int -> Property
+prop_positiveIntParserSuccess (Positive i) =
+  parseOnly positiveIntParser (T.pack . show $ i) === Right i
+
+prop_positiveIntParserFail :: String -> Property
+prop_positiveIntParserFail s =
+  parseOnly positiveIntParser ("x" <> (T.pack . show) s) === Left "digit: Failed reading: satisfy"
 
 prop_startsWith :: T.Text -> T.Text -> Property
 prop_startsWith prefix t =
