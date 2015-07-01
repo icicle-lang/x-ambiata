@@ -41,6 +41,13 @@ prop_eitherTFromMaybeLeft :: Int -> Property
 prop_eitherTFromMaybeLeft t =
   runIdentity (runEitherT $ eitherTFromMaybe t (Identity (Nothing :: Maybe ()))) === Left t
 
+prop_joinErrorsRight :: String -> Property
+prop_joinErrorsRight e =
+  joinErrorsEither (left e) === (left (Right e) :: EitherT (Either String String) Identity Int)
+
+prop_joinErrorsLeft :: String -> Property
+prop_joinErrorsLeft e =
+  joinErrorsEither (EitherT (EitherT (Identity (Left e)))) === (left (Left e) :: EitherT (Either String String) Identity Int)
 
 return []
 tests :: IO Bool
