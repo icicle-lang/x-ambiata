@@ -7,6 +7,9 @@ module X.Control.Monad.Trans.Either (
   , hoistEitherT
   , joinErrors
   , joinErrorsEither
+  , runOrFail
+  , expectLeft
+  , expectRight
   ) where
 
 import           Control.Monad.Trans.Either as X (
@@ -17,10 +20,12 @@ import           Control.Monad.Trans.Either as X (
                    , right
                    , hoistEither
                    , mapEitherT
+                   , swapEitherT
                    )
 
 import            Control.Monad
 import            Data.Bifunctor
+import            Data.Text (Text, unpack)
 
 firstEitherT :: Functor f => (e -> e') -> EitherT e f a -> EitherT e' f a
 firstEitherT f =
@@ -46,3 +51,26 @@ joinErrors g1 g2 = mapEitherT (fmap (join . bimap g2 (first g1))) . runEitherT
 --   and that the "outer" error (like a user error) becomes the Right error
 joinErrorsEither :: (Functor m, Monad m) => EitherT e (EitherT f m) a -> EitherT (Either f e) m a
 joinErrorsEither = joinErrors Right Left
+
+
+-- |
+-- Great for testing. Allows you to keep all properties in EitherT all the way to the top.
+-- Great for testIO:
+-- prop_... = testIO . runOrFail $ do <all EitherT here>
+--
+runOrFail :: (Monad m) => EitherT Text m a -> m a
+runOrFail = (=<<) (either (fail . unpack) return) . runEitherT
+
+-- |
+-- Useful to check an EitherT is Right, eg:
+--   expectRight (awsErrorRender) $ runAWST ...
+--
+expectRight :: Functor m => (l -> Text) -> EitherT l m a -> EitherT Text m a
+expectRight err e = bimapEitherT (err) id $ e
+
+-- |
+-- Useful to check that an EitherT deliberately failed, and that is ok. eg:
+--   expectLeft "This shouldn't be allowed" $ runAWST...
+--
+expectLeft :: Functor m => f -> EitherT b m e -> EitherT f m b
+expectLeft err e =  bimapEitherT (const err) id $ swapEitherT e
