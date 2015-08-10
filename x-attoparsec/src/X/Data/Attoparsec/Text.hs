@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module X.Data.Attoparsec.Text (
     module X
+  , eitherText
   , positiveIntegerParser
   , positiveIntParser
   , startsWith
@@ -29,3 +30,9 @@ positiveIntegerParser =
 positiveIntParser :: Parser Int
 positiveIntParser =
   (P.readMaybe <$> many1 digit) >>= P.maybe (fail "not a positive int") pure
+
+-- | create a Parser a from a text Parser
+eitherText :: (T.Text -> Either T.Text a) -> Parser a
+eitherText p = do
+  t <- takeText
+  either fail pure (first T.unpack (p t))

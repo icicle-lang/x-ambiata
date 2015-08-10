@@ -33,6 +33,23 @@ prop_startsWith prefix t =
   (startsWith (string prefix) (prefix <> t) === True) .&&.
   (startsWith (string ("a" <> prefix)) ("b" <> prefix <> t) === False)
 
+prop_eitherText :: T.Text -> Property
+prop_eitherText =
+  sameParsers (eitherText Right) takeText
+
+prop_eitherTextFailed :: T.Text -> Property
+prop_eitherTextFailed t =
+  sameParsers (eitherText Left) (fail (T.unpack t) :: Parser T.Text) t
+
+
+----------
+-- HELPERS
+----------
+
+sameParsers :: (Eq a, Show a) => Parser a -> Parser a -> T.Text -> Property
+sameParsers p1 p2 t = parseOnly p1 t === parseOnly p2 t
+
+--
 return []
 tests :: IO Bool
 tests = $quickCheckAll
