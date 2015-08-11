@@ -35,11 +35,11 @@ prop_startsWith prefix t =
 
 prop_eitherText :: T.Text -> Property
 prop_eitherText =
-  sameParsers (eitherText Right) takeText
+  sameParsers (takeText >>= eitherText . Right) takeText
 
 prop_eitherTextFailed :: T.Text -> Property
 prop_eitherTextFailed t =
-  sameParsers (eitherText Left) (fail (T.unpack t) :: Parser T.Text) t
+  sameParsers (takeText >>= eitherText . Left) (fail (T.unpack t) :: Parser T.Text) t
 
 
 ----------
