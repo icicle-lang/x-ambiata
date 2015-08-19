@@ -45,7 +45,7 @@ test-suite test
                      , either                          >= 4.3        && < 4.5
                      , optparse-applicative
                      , disorder-core
-                     , p
+                     , ambiata-p
                      , text                            == 1.2.*
                      , transformers
                      , transformers-compat
