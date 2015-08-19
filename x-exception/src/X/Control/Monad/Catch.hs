@@ -6,15 +6,12 @@ module X.Control.Monad.Catch (
   , bracketEitherT'
   ) where
 
-import           Control.Applicative (pure, (<$>))
-import           Control.Monad ((>>=))
+import           Control.Monad ((>>=), return, liftM)
 import           Control.Monad.Catch hiding (finally)
 import           Control.Monad.Trans.Either
 
 import           Data.Either
 import           Data.Function
-
-import           System.IO
 
 
 data BracketResult a =
@@ -28,41 +25,41 @@ data BracketResult a =
 --  - Left indicates a value level fail.
 --  - Right indicates that the finalizer has a value level success, and its results can be ignored.
 --
-bracketF :: IO a -> (a -> IO (Either b c)) -> (a -> IO b) -> IO b
+bracketF :: MonadMask m => m a -> (a -> m (Either b c)) -> (a -> m b) -> m b
 bracketF a f g =
   mask $ \restore -> do
     a' <- a
-    x <- restore (BracketOk <$> g a') `catchAll`
-           (\ex -> either BracketFailedFinalizerError (const $ BracketFailedFinalizerOk ex) <$> f a')
+    x <- restore (BracketOk `liftM` g a') `catchAll`
+           (\ex -> either BracketFailedFinalizerError (const $ BracketFailedFinalizerOk ex) `liftM` f a')
     case x of
       BracketFailedFinalizerOk ex ->
         throwM ex
       BracketFailedFinalizerError b ->
-        pure b
+        return b
       BracketOk b -> do
         z <- f a'
-        pure $ either id (const b) z
+        return $ either id (const b) z
 
 --
 -- Exception and `Left` safe version of bracketEitherT.
 --
-bracketEitherT' :: EitherT e IO a -> (a -> EitherT e IO c) -> (a -> EitherT e IO b) -> EitherT e IO b
+bracketEitherT' :: MonadMask m => EitherT e m a -> (a -> EitherT e m c) -> (a -> EitherT e m b) -> EitherT e m b
 bracketEitherT' acquire release run =
   EitherT $ bracketF
     (runEitherT acquire)
     (\r -> case r of
       Left _ ->
         -- Acquire failed, we have nothing to release
-        pure . Right $ ()
+        return . Right $ ()
       Right r' ->
         -- Acquire succeeded, we need to try and release
-        runEitherT (release r') >>= \x -> pure $ case x of
+        runEitherT (release r') >>= \x -> return $ case x of
           Left err -> Left (Left err)
           Right _ -> Right ())
     (\r -> case r of
       Left err ->
         -- Acquire failed, we have nothing to run
-        pure . Left $ err
+        return . Left $ err
       Right r' ->
         -- Acquire succeeded, we can do some work
         runEitherT (run r'))
