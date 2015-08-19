@@ -1,4 +1,4 @@
-name:                  x-exception
+name:                  ambiata-x-exception
 version:               0.0.1
 license:               AllRightsReserved
 author:                Ambiata <info@ambiata.com>
@@ -47,4 +47,4 @@ test-suite test
                      , transformers
                      , QuickCheck                      == 2.7.*
                      , quickcheck-instances            == 0.3.*
-                     , x-exception
+                     , ambiata-x-exception

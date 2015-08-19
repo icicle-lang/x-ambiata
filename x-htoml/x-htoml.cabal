@@ -1,4 +1,4 @@
-name:                  x-htoml
+name:                  ambiata-x-htoml
 version:               0.0.1
 license:               AllRightsReserved
 author:                Ambiata <info@ambiata.com>
@@ -46,4 +46,4 @@ test-suite test
                      , text
                      , QuickCheck                      == 2.7.*
                      , quickcheck-instances            == 0.3.*
-                     , x-htoml
+                     , ambiata-x-htoml
