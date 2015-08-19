@@ -1,4 +1,4 @@
-name:                  x-either
+name:                  ambiata-x-either
 version:               0.0.1
 license:               AllRightsReserved
 author:                Ambiata <info@ambiata.com>
@@ -35,4 +35,4 @@ test-suite test
                      , disorder-core
                      , transformers                >= 0.3        && < 0.5
                      , QuickCheck
-                     , x-either
+                     , ambiata-x-either

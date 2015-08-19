@@ -1,2 +1,2 @@
-../lib/disorder/disorder-aeson
-../lib/disorder/disorder-core
+lib/disorder/disorder-aeson
+lib/disorder/disorder-core

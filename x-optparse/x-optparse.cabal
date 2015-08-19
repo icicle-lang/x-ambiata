@@ -1,4 +1,4 @@
-name:                  x-optparse
+name:                  ambiata-x-optparse
 version:               0.0.1
 license:               AllRightsReserved
 author:                Ambiata <info@ambiata.com>
@@ -45,10 +45,10 @@ test-suite test
                      , either                          >= 4.3        && < 4.5
                      , optparse-applicative
                      , disorder-core
-                     , p
+                     , ambiata-p
                      , text                            == 1.2.*
                      , transformers
                      , transformers-compat
                      , QuickCheck                      == 2.7.*
                      , quickcheck-instances            == 0.3.*
-                     , x-optparse
+                     , ambiata-x-optparse

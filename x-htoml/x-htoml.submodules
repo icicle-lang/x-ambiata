@@ -1,2 +1,2 @@
-../lib/disorder/disorder-core
-../lib/disorder/disorder-lens
+lib/disorder/disorder-core
+lib/disorder/disorder-lens

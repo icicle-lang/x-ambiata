@@ -1,4 +1,4 @@
-name:                  x-attoparsec
+name:                  ambiata-x-attoparsec
 version:               0.0.1
 license:               AllRightsReserved
 author:                Ambiata <info@ambiata.com>
@@ -15,7 +15,7 @@ library
                        attoparsec                      == 0.12.*
                      , base                            >= 3          && < 5
                      , bytestring                      == 0.10.*
-                     , p
+                     , ambiata-p
                      , text                            >= 1.1        && < 1.3
 
   ghc-options:
@@ -42,8 +42,8 @@ test-suite test
                        attoparsec
                      , base
                      , disorder-core
-                     , p
+                     , ambiata-p
                      , QuickCheck                      == 2.7.*
                      , quickcheck-instances            == 0.3.*
                      , text
-                     , x-attoparsec
+                     , ambiata-x-attoparsec
