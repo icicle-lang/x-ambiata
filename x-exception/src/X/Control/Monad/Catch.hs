@@ -6,7 +6,7 @@ module X.Control.Monad.Catch (
   , bracketEitherT'
   ) where
 
-import           Control.Monad (return, liftM)
+import           Control.Monad ((>>=), return, liftM)
 import           Control.Monad.Catch hiding (finally)
 import           Control.Monad.Trans.Either
 
@@ -65,4 +65,4 @@ bracketEitherT' acquire release run =
   resource <- acquire'
   result <- unmask (run' resource) `onException` release' resource
   releaseResult <- release' resource
-  return . either Left (<$ releaseResult) $ result
+  return $ result >>= (<$ releaseResult)
