@@ -1,13 +1,13 @@
 {-# LANGUAGE TemplateHaskell #-}
 module Test.X.Control.Monad.Trans.Either where
 
+import           Control.Applicative ( (<$>), (<*>), pure )
 import           Data.Functor.Identity
 
 import           Test.QuickCheck
 import           Test.QuickCheck.Function
 
 import           X.Control.Monad.Trans.Either
-
 
 prop_firstEitherT_id :: String -> Int -> Property
 prop_firstEitherT_id s n =
@@ -40,6 +40,24 @@ prop_eitherTFromMaybeRight t =
 prop_eitherTFromMaybeLeft :: Int -> Property
 prop_eitherTFromMaybeLeft t =
   runIdentity (runEitherT $ eitherTFromMaybe t (Identity (Nothing :: Maybe ()))) === Left t
+
+prop_reduceEitherT :: String -> Property
+prop_reduceEitherT e =
+  let
+    forall' :: [a] -> (a -> Property) -> Property
+    forall' cs f = conjoin . fmap f $ cs
+
+    cases :: [EitherT String (EitherT String Identity) String]
+    cases = [
+        left e                          -- Outer error
+      , (EitherT . fmap pure) $ left e  -- Inner error
+      , return e                        -- Success
+      ]
+
+    identityReduceIsJoin :: EitherT String (EitherT String Identity) String -> Property
+    identityReduceIsJoin = (===) <$> reduceEitherT id id <*> joinEitherT id
+
+  in forall' cases identityReduceIsJoin
 
 prop_joinErrorsRight :: String -> Property
 prop_joinErrorsRight e =
