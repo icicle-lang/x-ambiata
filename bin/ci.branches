@@ -12,8 +12,8 @@ MODULES=$(ls x-*/*.cabal)
 for x in $MODULES; do
     (
         cd $(dirname $x)
-        ./cabal update || exit $?
-        ./cabal build || exit $?
-        ./cabal test || exit $?
+        ./mafia update || exit $?
+        ./mafia build || exit $?
+        ./mafia testci || exit $?
     )
 done
