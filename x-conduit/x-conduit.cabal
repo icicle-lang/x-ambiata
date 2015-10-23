@@ -16,6 +16,7 @@ library
                      , bytestring                      == 0.10.*
                      , conduit                         == 1.2.*
                      , conduit-extra                   == 1.1.*
+                     , either                          >= 4.3        && < 4.5
                      , transformers                    == 0.4.*
                      , resourcet                       == 1.1.*
 
@@ -27,6 +28,7 @@ library
 
 
   exposed-modules:
+                       X.Control.Monad.Trans.Resource
                        X.Data.Conduit.Binary
 
 test-suite test
@@ -43,6 +45,7 @@ test-suite test
                        base                            >= 3          && < 5
                      , ambiata-x-conduit
                      , disorder-core
+                     , either                          >= 4.3        && < 4.5
                      , temporary
                      , text                            == 1.2.*
                      , QuickCheck                      == 2.7.*
@@ -51,4 +54,5 @@ test-suite test
                      , conduit-extra                   == 1.1.*
                      , bytestring                      == 0.10.*
                      , filepath                        == 1.3.*
-                     , resourcet                        == 1.1.*
+                     , resourcet                       == 1.1.*
+                     , void                            == 0.7.*
