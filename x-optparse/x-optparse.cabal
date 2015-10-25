@@ -15,7 +15,7 @@ library
                        base                            >= 3          && < 5
                      , attoparsec                      == 0.12.*
                      , either                          >= 4.3        && < 4.5
-                     , optparse-applicative            == 0.12.*
+                     , optparse-applicative            >= 0.11       && < 0.13
                      , text                            == 1.2.*
                      , transformers                    >= 0.3        && < 0.5
 
