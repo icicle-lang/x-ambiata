@@ -13,7 +13,7 @@ description:           x-optparse.
 library
   build-depends:
                        base                            >= 3          && < 5
-                     , attoparsec                      == 0.12.*
+                     , attoparsec                      >= 0.11       && < 0.13
                      , either                          >= 4.3        && < 4.5
                      , optparse-applicative            == 0.12.*
                      , text                            == 1.2.*
