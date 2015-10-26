@@ -13,7 +13,7 @@ description:           x-either.
 library
   build-depends:
                           base                        >= 4.6        && < 5
-                        , bifunctors                  >= 4.2        && < 5
+                        , bifunctors                  >= 4.2        && <= 5
                         , either                      >= 4.3        && < 4.5
 
   ghc-options:
