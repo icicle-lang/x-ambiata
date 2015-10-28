@@ -13,6 +13,8 @@ description:           x-eithert.
 library
   build-depends:
                        base                            >= 4.6        && < 5
+                     , ambiata-x-exception
+                     , exceptions                      >= 0.6        && < 0.9
                      , transformers                    >= 0.4        && < 0.5
 
   ghc-options:
@@ -38,5 +40,7 @@ test-suite test
   build-depends:       base
                      , disorder-core
                      , ambiata-x-eithert
+                     , text                            == 1.2.*
                      , transformers                    >= 0.4        && < 0.5
                      , QuickCheck                      == 2.7.*
+                     , quickcheck-instances            == 0.3.*

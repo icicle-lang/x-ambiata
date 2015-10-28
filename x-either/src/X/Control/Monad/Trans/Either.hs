@@ -1,6 +1,8 @@
+{-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE RankNTypes #-}
 module X.Control.Monad.Trans.Either (
     module X
+  , bracketEitherT'
   , firstEitherT
   , secondEitherT
   , eitherTFromMaybe
@@ -22,8 +24,40 @@ import           Control.Monad.Trans.Either as X (
                    , mapEitherT
                    )
 
-import            Control.Monad
-import            Data.Bifunctor
+import           Control.Monad (Monad(..), join)
+import           Control.Monad.Catch (MonadMask(..))
+
+import           Data.Bifunctor (first)
+import           Data.Either (Either(..))
+import           Data.Function (($), (.), id)
+import           Data.Functor (Functor(..))
+import           Data.Maybe (Maybe, maybe)
+
+import           X.Control.Monad.Catch (bracketF)
+
+--
+-- Exception and `Left` safe version of bracketEitherT.
+--
+bracketEitherT' :: MonadMask m => EitherT e m a -> (a -> EitherT e m c) -> (a -> EitherT e m b) -> EitherT e m b
+bracketEitherT' acquire release run =
+  EitherT $ bracketF
+    (runEitherT acquire)
+    (\r -> case r of
+      Left _ ->
+        -- Acquire failed, we have nothing to release
+        return . Right $ ()
+      Right r' ->
+        -- Acquire succeeded, we need to try and release
+        runEitherT (release r') >>= \x -> return $ case x of
+          Left err -> Left (Left err)
+          Right _ -> Right ())
+    (\r -> case r of
+      Left err ->
+        -- Acquire failed, we have nothing to run
+        return . Left $ err
+      Right r' ->
+        -- Acquire succeeded, we can do some work
+        runEitherT (run r'))
 
 firstEitherT :: Functor f => (e -> e') -> EitherT e f a -> EitherT e' f a
 firstEitherT f =

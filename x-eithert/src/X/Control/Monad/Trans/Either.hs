@@ -1,3 +1,4 @@
+{-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE PatternSynonyms #-}
 {-# LANGUAGE RankNTypes #-}
 module X.Control.Monad.Trans.Either (
@@ -13,6 +14,7 @@ module X.Control.Monad.Trans.Either (
   , right
 
   -- * Extensions
+  , bracketEitherT'
   , firstEitherT
   , secondEitherT
   , eitherTFromMaybe
@@ -24,8 +26,16 @@ module X.Control.Monad.Trans.Either (
   , reduceEitherT
   ) where
 
-import           Control.Monad (join)
+import           Control.Monad (Monad(..), (=<<), join)
 import           Control.Monad.Trans.Except (ExceptT(..))
+import           Control.Monad.Catch (MonadMask(..))
+
+import           Data.Maybe (Maybe, maybe)
+import           Data.Either (Either(..), either)
+import           Data.Function (($), (.), id)
+import           Data.Functor (Functor(..))
+
+import           X.Control.Monad.Catch (bracketF)
 
 ------------------------------------------------------------------------
 -- Control.Monad.Trans.Either
@@ -72,6 +82,30 @@ bimapEitherT f g =
 
 ------------------------------------------------------------------------
 -- Extensions
+
+--
+-- Exception and `Left` safe version of bracketEitherT.
+--
+bracketEitherT' :: MonadMask m => EitherT e m a -> (a -> EitherT e m c) -> (a -> EitherT e m b) -> EitherT e m b
+bracketEitherT' acquire release run =
+  EitherT $ bracketF
+    (runEitherT acquire)
+    (\r -> case r of
+      Left _ ->
+        -- Acquire failed, we have nothing to release
+        return . Right $ ()
+      Right r' ->
+        -- Acquire succeeded, we need to try and release
+        runEitherT (release r') >>= \x -> return $ case x of
+          Left err -> Left (Left err)
+          Right _ -> Right ())
+    (\r -> case r of
+      Left err ->
+        -- Acquire failed, we have nothing to run
+        return . Left $ err
+      Right r' ->
+        -- Acquire succeeded, we can do some work
+        runEitherT (run r'))
 
 firstEitherT :: Functor m => (x -> y) -> EitherT x m a -> EitherT y m a
 firstEitherT f =

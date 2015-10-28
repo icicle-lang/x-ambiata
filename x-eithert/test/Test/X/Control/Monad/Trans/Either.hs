@@ -1,13 +1,35 @@
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
 module Test.X.Control.Monad.Trans.Either where
 
 import           Control.Applicative ((<$>), (<*>), pure)
+import           Control.Monad ((>>), return)
+import           Control.Monad.IO.Class (liftIO)
+
+import           Data.Bool (Bool)
+import           Data.Char (Char)
+import           Data.Either (Either(..))
+import           Data.Function (($), (.), id)
+import           Data.Functor (fmap)
 import           Data.Functor.Identity (Identity(..))
+import           Data.IORef (IORef, newIORef, readIORef, modifyIORef)
+import           Data.Int (Int)
+import           Data.Maybe (Maybe(..))
+import           Data.Monoid ((<>))
+import           Data.String (String)
+import           Data.Text (Text)
+
+import           Disorder.Core.IO (testIO)
+
+import           System.IO (IO)
 
 import           Test.QuickCheck (Property, (===), (.&&.), conjoin, quickCheckAll)
 import           Test.QuickCheck.Function (Fun, apply)
+import           Test.QuickCheck.Instances ()
 
 import           X.Control.Monad.Trans.Either
+
 
 prop_firstEitherT_id :: String -> Int -> Property
 prop_firstEitherT_id s n =
@@ -66,6 +88,41 @@ prop_joinErrorsRight e =
 prop_joinErrorsLeft :: String -> Property
 prop_joinErrorsLeft e =
   joinErrorsEither (EitherT (EitherT (Identity (Left e)))) === (left (Left e) :: EitherT (Either String String) Identity Int)
+
+prop_bracketEitherT :: Text -> Text -> Text -> Property
+prop_bracketEitherT a b c = testIO $ do
+  ref <- newIORef ""
+  let before' = swazzle ref a
+  let after' = \_ -> swazzle ref c
+  let action' = \_ -> swazzle ref b
+  _ <- runEitherT $ bracketEitherT' before' after' action'
+  f <- readIORef ref
+  pure $ f === (a <> b <> c)
+
+prop_bracketEitherT_action_failed :: Text -> Text -> Text -> Property
+prop_bracketEitherT_action_failed a b c = testIO $ do
+  ref <- newIORef ""
+  let before' = swazzle ref a
+  let after' = \_ -> swazzle ref c
+  let action' = \_ -> swazzle ref b >> left ()
+  _ <- runEitherT $ bracketEitherT' before' after' action'
+  f <- readIORef ref
+  pure $ f === (a <> b <> c)
+
+prop_bracketEitherT_aquire_failed :: Text -> Text -> Text -> Property
+prop_bracketEitherT_aquire_failed a b c = testIO $ do
+  ref <- newIORef ""
+  let before' = swazzle ref a >> left ()
+  let after' = \_ -> swazzle ref c
+  let action' = \_ -> swazzle ref b
+  _ <- runEitherT $ bracketEitherT' before' after' action'
+  f <- readIORef ref
+  pure $ f === a
+
+swazzle :: IORef Text -> Text -> EitherT () IO ()
+swazzle ref t =
+  liftIO $ modifyIORef ref (<> t)
+
 
 return []
 tests :: IO Bool
