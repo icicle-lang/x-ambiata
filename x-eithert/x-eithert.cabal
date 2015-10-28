@@ -15,6 +15,7 @@ library
                        base                            >= 4.6        && < 5
                      , ambiata-x-exception
                      , exceptions                      >= 0.6        && < 0.9
+                     , text                            == 1.2.*
                      , transformers                    >= 0.4        && < 0.5
 
   ghc-options:
@@ -26,6 +27,7 @@ library
 
   exposed-modules:
                        X.Control.Monad.Trans.Either
+                       X.Control.Monad.Trans.Either.Exit
 
 test-suite test
   type:                exitcode-stdio-1.0

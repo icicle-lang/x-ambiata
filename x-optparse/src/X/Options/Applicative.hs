@@ -8,35 +8,31 @@ module X.Options.Applicative (
   , textRead
   , command'
   , dispatch
-  , orDie
-  , orDieWithCode
   , safeCommand
   , versionFlag
   , dryRunFlag
   ) where
 
-import           Control.Applicative
-import           Control.Monad
-import           Control.Monad.Trans.Reader
-import           Control.Monad.Trans.Either
+import           Control.Monad ((>>=), (=<<))
+import           Control.Monad.Trans.Reader (ReaderT(..))
 
 import qualified Data.Attoparsec.Text as A
-import           Data.Either
-import           Data.Eq
-import           Data.Int (Int)
-import           Data.Function
+import           Data.Either (either)
+import           Data.Eq (Eq)
+import           Data.Function (($), (.))
+import           Data.Functor (fmap)
+import           Data.Monoid (mempty)
 import           Data.String (String)
-import           Data.Text as T
-import           Data.Monoid
+import           Data.Text (Text)
+import qualified Data.Text as T
 
 import           Options.Applicative as X
 import           Options.Applicative.Types as X
 
-import           System.IO
+import           System.IO (IO)
 import           System.Environment (getArgs)
-import           System.Exit
 
-import           Text.Show
+import           Text.Show (Show)
 
 
 data RunType =
@@ -74,24 +70,6 @@ dispatch p = getArgs >>= \x -> case x of
         in  execParserPure (prefs showHelpOnError) (info (p <**> helper) idm) <$> getArgs
             >>= handleParseResult . removeError
   _  -> execParser (info (p <**> helper) idm)
-
--- | orDieWithCode with an exit code of 1 in case of an error
---
-orDie :: (e -> Text) -> EitherT e IO a -> IO a
-orDie = orDieWithCode 1
-
--- | An idiom for failing hard on EitherT errors.
---
--- *This really dies*. There is no other way to say it.
---
--- The reason it lives with command line parser tooling, is that is
--- the only valid place to actually exit like this. Be appropriately
--- wary.
---
-orDieWithCode :: Int -> (e -> Text) -> EitherT e IO a -> IO a
-orDieWithCode code render e =
-  runEitherT e >>=
-    either (\err -> (hPutStrLn stderr . T.unpack . render) err >> exitWith (ExitFailure code)) pure
 
 -- | Turn a Parser for a command of type a into a safe command
 --   with a dry-run mode and a version flag
