@@ -41,8 +41,8 @@ test-suite test
   build-depends:
                        base                            >= 3          && < 5
                      , htoml
-                     , disorder-core
-                     , disorder-lens
+                     , ambiata-disorder-core
+                     , ambiata-disorder-lens
                      , text
                      , QuickCheck                      == 2.7.*
                      , quickcheck-instances            == 0.3.*

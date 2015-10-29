@@ -42,7 +42,7 @@ test-suite test
   build-depends:
                        base                            >= 3          && < 5
                      , ambiata-x-conduit
-                     , disorder-core
+                     , ambiata-disorder-core
                      , temporary
                      , text                            == 1.2.*
                      , QuickCheck                      == 2.7.*

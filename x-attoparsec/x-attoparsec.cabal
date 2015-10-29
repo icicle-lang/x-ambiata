@@ -41,7 +41,7 @@ test-suite test
   build-depends:
                        attoparsec
                      , base
-                     , disorder-core
+                     , ambiata-disorder-core
                      , ambiata-p
                      , QuickCheck                      == 2.7.*
                      , quickcheck-instances            == 0.3.*
