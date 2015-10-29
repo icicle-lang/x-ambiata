@@ -40,8 +40,8 @@ test-suite test
   build-depends:
                        aeson
                      , base
-                     , disorder-aeson
-                     , disorder-core
+                     , ambiata-disorder-aeson
+                     , ambiata-disorder-core
                      , QuickCheck                      == 2.7.*
                      , quickcheck-instances            == 0.3.*
                      , text
