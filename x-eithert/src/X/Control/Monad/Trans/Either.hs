@@ -1,7 +1,19 @@
 {-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE PatternSynonyms #-}
 {-# LANGUAGE RankNTypes #-}
 module X.Control.Monad.Trans.Either (
-    module X
+  -- * Control.Monad.Trans.Either
+    EitherT
+  , pattern EitherT
+  , runEitherT
+  , bimapEitherT
+  , mapEitherT
+  , hoistEither
+  , eitherT
+  , left
+  , right
+
+  -- * Extensions
   , bracketEitherT'
   , firstEitherT
   , secondEitherT
@@ -14,26 +26,62 @@ module X.Control.Monad.Trans.Either (
   , reduceEitherT
   ) where
 
-import           Control.Monad.Trans.Either as X (
-                     EitherT (..)
-                   , eitherT
-                   , bimapEitherT
-                   , left
-                   , right
-                   , hoistEither
-                   , mapEitherT
-                   )
-
-import           Control.Monad (Monad(..), join)
+import           Control.Monad (Monad(..), (=<<), join)
+import           Control.Monad.Trans.Except (ExceptT(..))
 import           Control.Monad.Catch (MonadMask(..))
 
-import           Data.Bifunctor (first)
-import           Data.Either (Either(..))
+import           Data.Maybe (Maybe, maybe)
+import           Data.Either (Either(..), either)
 import           Data.Function (($), (.), id)
 import           Data.Functor (Functor(..))
-import           Data.Maybe (Maybe, maybe)
 
 import           X.Control.Monad.Catch (bracketF)
+
+------------------------------------------------------------------------
+-- Control.Monad.Trans.Either
+
+type EitherT = ExceptT
+
+pattern EitherT m = ExceptT m
+
+runEitherT :: EitherT x m a -> m (Either x a)
+runEitherT (ExceptT m) = m
+{-# INLINE runEitherT #-}
+
+eitherT :: Monad m => (x -> m b) -> (a -> m b) -> EitherT x m a -> m b
+eitherT f g m =
+  either f g =<< runEitherT m
+{-# INLINE eitherT #-}
+
+left :: Monad m => x -> EitherT x m a
+left =
+  EitherT . return . Left
+{-# INLINE left #-}
+
+right :: Monad m => a -> EitherT x m a
+right =
+  return
+{-# INLINE right #-}
+
+mapEitherT :: (m (Either x a) -> n (Either y b)) -> EitherT x m a -> EitherT y n b
+mapEitherT f =
+  EitherT . f . runEitherT
+{-# INLINE mapEitherT #-}
+
+hoistEither :: Monad m => Either x a -> EitherT x m a
+hoistEither =
+  EitherT . return
+{-# INLINE hoistEither #-}
+
+bimapEitherT :: Functor m => (x -> y) -> (a -> b) -> EitherT x m a -> EitherT y m b
+bimapEitherT f g =
+  let h (Left  e) = Left  (f e)
+      h (Right a) = Right (g a)
+  in mapEitherT (fmap h)
+{-# INLINE bimapEitherT #-}
+
+------------------------------------------------------------------------
+-- Extensions
 
 --
 -- Exception and `Left` safe version of bracketEitherT.
@@ -59,30 +107,42 @@ bracketEitherT' acquire release run =
         -- Acquire succeeded, we can do some work
         runEitherT (run r'))
 
-firstEitherT :: Functor f => (e -> e') -> EitherT e f a -> EitherT e' f a
+firstEitherT :: Functor m => (x -> y) -> EitherT x m a -> EitherT y m a
 firstEitherT f =
   bimapEitherT f id
+{-# INLINE firstEitherT #-}
 
-secondEitherT :: Functor f => (a -> a') -> EitherT e f a -> EitherT e f a'
+secondEitherT :: Functor m => (a -> b) -> EitherT x m a -> EitherT x m b
 secondEitherT =
   bimapEitherT id
+{-# INLINE secondEitherT #-}
 
-eitherTFromMaybe :: Functor f => e -> f (Maybe a) -> EitherT e f a
-eitherTFromMaybe e =
-  EitherT . fmap (maybe (Left e) Right)
+eitherTFromMaybe :: Functor m => x -> m (Maybe a) -> EitherT x m a
+eitherTFromMaybe x =
+  EitherT . fmap (maybe (Left x) Right)
+{-# INLINE eitherTFromMaybe #-}
 
-hoistEitherT :: (forall t. m t -> n t) -> EitherT e m a -> EitherT e n a
-hoistEitherT f = EitherT . f . runEitherT
+hoistEitherT :: (forall b. m b -> n b) -> EitherT x m a -> EitherT x n a
+hoistEitherT f =
+  EitherT . f . runEitherT
+{-# INLINE hoistEitherT #-}
 
 mapEitherE :: Functor m => (Either x a -> Either y b) -> EitherT x m a -> EitherT y m b
-mapEitherE f = mapEitherT (fmap f)
+mapEitherE f =
+  mapEitherT (fmap f)
+{-# INLINE mapEitherE #-}
 
-joinEitherT :: Functor m => (y -> x) -> EitherT x (EitherT y m) a -> EitherT x m a
-joinEitherT f = mapEitherE (join . first f) . runEitherT
+joinEitherT :: (Functor m, Monad m) => (y -> x) -> EitherT x (EitherT y m) a -> EitherT x m a
+joinEitherT f =
+  let first g = either (Left . g) Right
+  in mapEitherE (join . first f) . runEitherT
+{-# INLINE joinEitherT #-}
 
 -- | unify the errors of 2 nested EithersT
 joinErrors :: (Functor m, Monad m) => (x -> z) -> (y -> z) -> EitherT x (EitherT y m) a -> EitherT z m a
-joinErrors f g = joinEitherT g . firstEitherT f
+joinErrors f g =
+  joinEitherT g . firstEitherT f
+{-# INLINE joinErrors #-}
 
 -- |
 -- `joinErrors` results in a cycle of hoists/mapEitherTs and joinErrors to bubble errors up to the top layer of EitherT
@@ -111,14 +171,18 @@ joinErrors f g = joinEitherT g . firstEitherT f
 --
 reduceEitherT
   :: (Functor n, Monad n)
-  => (e' -> e)
-  -> (forall a. m a -> EitherT e' n a)
-  -> EitherT e m b
-  -> EitherT e n b
-reduceEitherT embedError f = joinEitherT embedError . hoistEitherT f
+  => (y -> x)
+  -> (forall b. m b -> EitherT y n b)
+  -> EitherT x m a
+  -> EitherT x n a
+reduceEitherT embedError f =
+  joinEitherT embedError . hoistEitherT f
+{-# INLINE reduceEitherT #-}
 
 -- | unify the errors of 2 nested EithersT with an Either e f
 --   note that the "inner" monad error (like a network error) becomes the Left error
 --   and that the "outer" error (like a user error) becomes the Right error
-joinErrorsEither :: (Functor m, Monad m) => EitherT e (EitherT f m) a -> EitherT (Either f e) m a
-joinErrorsEither = joinErrors Right Left
+joinErrorsEither :: (Functor m, Monad m) => EitherT x (EitherT y m) a -> EitherT (Either y x) m a
+joinErrorsEither =
+  joinErrors Right Left
+{-# INLINE joinErrorsEither #-}

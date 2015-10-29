@@ -1,19 +1,22 @@
-name:                  ambiata-x-exception
+name:                  ambiata-x-eithert
 version:               0.0.1
 license:               AllRightsReserved
 author:                Ambiata <info@ambiata.com>
 maintainer:            Ambiata <info@ambiata.com>
 copyright:             (c) 2015 Ambiata.
-synopsis:              x-exception
-category:              x-exception
+synopsis:              x-eithert.
+category:              Prelude
 cabal-version:         >= 1.8
 build-type:            Simple
-description:           x-exception.
+description:           x-eithert.
 
 library
   build-depends:
-                       base                            >= 3          && < 5
+                       base                            >= 4.6        && < 5
+                     , ambiata-x-exception
                      , exceptions                      >= 0.6        && < 0.9
+                     , text                            == 1.2.*
+                     , transformers                    >= 0.4        && < 0.5
 
   ghc-options:
                        -Wall
@@ -23,7 +26,8 @@ library
 
 
   exposed-modules:
-                       X.Control.Monad.Catch
+                       X.Control.Monad.Trans.Either
+                       X.Control.Monad.Trans.Either.Exit
 
 test-suite test
   type:                exitcode-stdio-1.0
@@ -35,10 +39,10 @@ test-suite test
   hs-source-dirs:
                        test
 
-  build-depends:
-                       base                            >= 3          && < 5
+  build-depends:       base
                      , disorder-core
-                     , ambiata-x-exception
+                     , ambiata-x-eithert
                      , text                            == 1.2.*
+                     , transformers                    >= 0.4        && < 0.5
                      , QuickCheck                      == 2.7.*
                      , quickcheck-instances            == 0.3.*

@@ -3,15 +3,13 @@
 {-# LANGUAGE RankNTypes #-}
 module X.Control.Monad.Catch (
     bracketF
-  , bracketEitherT'
   ) where
 
-import           Control.Monad ((>>=), return, liftM)
-import           Control.Monad.Catch hiding (finally)
-import           Control.Monad.Trans.Either
+import           Control.Monad (return, liftM)
+import           Control.Monad.Catch (MonadMask(..), SomeException, catchAll, throwM)
 
-import           Data.Either
-import           Data.Function
+import           Data.Either (Either(..), either)
+import           Data.Function (($), const, id)
 
 
 data BracketResult a =
@@ -39,27 +37,3 @@ bracketF a f g =
       BracketOk b -> do
         z <- f a'
         return $ either id (const b) z
-
---
--- Exception and `Left` safe version of bracketEitherT.
---
-bracketEitherT' :: MonadMask m => EitherT e m a -> (a -> EitherT e m c) -> (a -> EitherT e m b) -> EitherT e m b
-bracketEitherT' acquire release run =
-  EitherT $ bracketF
-    (runEitherT acquire)
-    (\r -> case r of
-      Left _ ->
-        -- Acquire failed, we have nothing to release
-        return . Right $ ()
-      Right r' ->
-        -- Acquire succeeded, we need to try and release
-        runEitherT (release r') >>= \x -> return $ case x of
-          Left err -> Left (Left err)
-          Right _ -> Right ())
-    (\r -> case r of
-      Left err ->
-        -- Acquire failed, we have nothing to run
-        return . Left $ err
-      Right r' ->
-        -- Acquire succeeded, we can do some work
-        runEitherT (run r'))

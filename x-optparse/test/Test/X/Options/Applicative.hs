@@ -4,26 +4,25 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 module Test.X.Options.Applicative where
 
-import           Control.Applicative
-import           Control.Monad
-import           Control.Monad.Trans.Except
-import           Control.Monad.Trans.Reader
+import           Control.Monad (return)
+import           Control.Monad.Trans.Except (runExcept)
+import           Control.Monad.Trans.Reader (runReaderT)
 
 import qualified Data.Attoparsec.Text as A
-import           Data.Either
-import           Data.Function
-import           Data.Maybe
-import           Data.Bool
-import           Data.Int
-import           Data.Text as T
+import           Data.Bool (Bool)
+import           Data.Either (either)
+import           Data.Eq ((/=))
+import           Data.Function (($), (.), const)
+import           Data.Functor (fmap)
+import           Data.Maybe (Maybe(..))
+import           Data.Text (Text)
+import qualified Data.Text as T
 
 import           X.Options.Applicative
 
-import           P
+import           System.IO (IO)
 
-import           System.IO
-
-import           Test.QuickCheck
+import           Test.QuickCheck (Property, (===), quickCheckAll)
 import           Test.QuickCheck.Instances ()
 
 prop_pOption :: Text -> Property
@@ -45,10 +44,6 @@ prop_safeCommand t =
       name = T.filter (/= '-') t
       parser = safeCommand arg
   in  getParseResult (execParserPure (prefs idm) (info parser idm) [T.unpack name, "--dry-run"]) === Just (RunCommand DryRun name)
-
-prop_orDie :: Int -> Property
-prop_orDie n =
-  ioProperty $ orDie id (pure n) >>= \r -> pure $ r === n
 
 return []
 tests :: IO Bool

@@ -14,7 +14,6 @@ library
   build-depends:
                        base                            >= 3          && < 5
                      , attoparsec                      == 0.12.*
-                     , either                          >= 4.3        && < 4.5
                      , optparse-applicative            >= 0.11       && < 0.13
                      , text                            == 1.2.*
                      , transformers                    >= 0.3        && < 0.5
@@ -41,14 +40,12 @@ test-suite test
 
   build-depends:
                        base                            >= 3          && < 5
-                     , attoparsec
-                     , either                          >= 4.3        && < 4.5
-                     , optparse-applicative
                      , disorder-core
-                     , ambiata-p
+                     , ambiata-x-optparse
+                     , attoparsec
+                     , optparse-applicative
                      , text                            == 1.2.*
                      , transformers
                      , transformers-compat
                      , QuickCheck                      == 2.7.*
                      , quickcheck-instances            == 0.3.*
-                     , ambiata-x-optparse

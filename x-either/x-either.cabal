@@ -12,9 +12,12 @@ description:           x-either.
 
 library
   build-depends:
-                          base                        >= 4.6        && < 5
-                        , bifunctors                  >= 4.2        && < 5
-                        , either                      >= 4.3        && < 4.5
+                       base                            >= 4.6        && < 5
+                     , ambiata-x-exception
+                     , bifunctors                      >= 4.2        && < 5
+                     , exceptions                      >= 0.6        && < 0.9
+                     , either                          >= 4.3        && < 4.5
+                     , text                            == 1.2.*
 
   ghc-options:
                        -Wall
@@ -25,14 +28,22 @@ library
 
   exposed-modules:
                        X.Control.Monad.Trans.Either
+                       X.Control.Monad.Trans.Either.Exit
 
 test-suite test
-  type:           exitcode-stdio-1.0
-  main-is:        test.hs
-  ghc-options:    -Wall -threaded -O2
-  hs-source-dirs: test
+  type:                exitcode-stdio-1.0
+
+  main-is:             test.hs
+
+  ghc-options:         -Wall -threaded -O2
+
+  hs-source-dirs:
+                       test
+
   build-depends:       base
                      , disorder-core
-                     , transformers                >= 0.3        && < 0.5
-                     , QuickCheck
                      , ambiata-x-either
+                     , text                            == 1.2.*
+                     , transformers                    >= 0.4        && < 0.5
+                     , QuickCheck                      == 2.7.*
+                     , quickcheck-instances            == 0.3.*
