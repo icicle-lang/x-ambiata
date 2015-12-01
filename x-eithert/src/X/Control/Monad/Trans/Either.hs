@@ -4,6 +4,7 @@
 module X.Control.Monad.Trans.Either (
   -- * Control.Monad.Trans.Either
     EitherT
+  , newEitherT
   , pattern EitherT
   , runEitherT
   , bimapEitherT
@@ -47,6 +48,11 @@ pattern EitherT m = ExceptT m
 runEitherT :: EitherT x m a -> m (Either x a)
 runEitherT (ExceptT m) = m
 {-# INLINE runEitherT #-}
+
+newEitherT :: m (Either x a) -> EitherT x m a
+newEitherT =
+  ExceptT
+{-# INLINE newEitherT #-}
 
 eitherT :: Monad m => (x -> m b) -> (a -> m b) -> EitherT x m a -> m b
 eitherT f g m =
