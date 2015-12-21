@@ -13,6 +13,9 @@ description:           x-htoml.
 library
   build-depends:
                        base                            >= 3          && < 5
+                     -- htoml depends on tasty, which depends on clock
+                     -- clock-0.6.x is broken on CentOS 6 so we need to pin it to 0.5.x here
+                     , clock                           == 0.5.*
                      , htoml                           == 0.1.*
                      , lens                            >= 4.6        && < 4.9
                      , text                            == 1.2.*
