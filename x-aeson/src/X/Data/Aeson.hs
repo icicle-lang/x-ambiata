@@ -1,3 +1,4 @@
+{-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 module X.Data.Aeson (
     module X
@@ -10,15 +11,18 @@ module X.Data.Aeson (
   , printPair
   ) where
 
-import           Control.Applicative
-
+import           Control.Applicative ((<*>), pure)
+import           Control.Monad ((>>=), fail)
 import           Data.Aeson as X
 import           Data.Aeson.Types as X
+import           Data.Either (Either(..), either)
+import           Data.Function ((.), ($))
+import           Data.Functor ((<$>))
+import           Data.Maybe (Maybe, maybe)
 import           Data.Monoid
 import           Data.Text
 import           Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import           Data.ByteString.Lazy (toStrict)
-
 
 (.=?) :: ToJSON a => Text -> Maybe a -> [(Text, Value)]
 (.=?) k =

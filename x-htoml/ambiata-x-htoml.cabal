@@ -16,10 +16,10 @@ library
                      -- htoml depends on tasty, which depends on clock
                      -- clock-0.6.x is broken on CentOS 6 so we need to pin it to 0.5.x here
                      , clock                           == 0.5.*
-                     , htoml                           == 0.1.*
+                     , htoml                           >= 0.1.0.3    && < 0.2
                      , lens                            >= 4.6        && < 4.9
                      , text                            == 1.2.*
-                     , time                            == 1.4.*
+                     , time                            == 1.5.*
 
   ghc-options:
                        -Wall
