@@ -1,14 +1,20 @@
+{-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
 module Test.X.Data.Aeson where
 
-import           Control.Applicative
-
+import           Control.Monad
+import           Data.Bool
+import           Data.Either
+import           Data.Eq
+import           Data.Function
+import           Data.Functor ((<$>))
+import           Data.Maybe
 import           Data.Text as T
+import           System.IO (IO)
+import           Text.Show
 
 import           Disorder.Aeson
-
-import           System.IO ()
 
 import           Test.QuickCheck
 import           Test.QuickCheck.Instances ()
