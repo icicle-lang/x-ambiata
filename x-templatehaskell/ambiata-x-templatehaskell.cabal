@@ -42,6 +42,6 @@ test-suite test
                      , ambiata-x-templatehaskell
                      , ambiata-disorder-core
                      , text                            == 1.2.*
-                     , QuickCheck                      == 2.7.*
+                     , QuickCheck                      == 2.8.*
                      , quickcheck-instances            == 0.3.*
                      , template-haskell                >= 2.8

@@ -45,7 +45,7 @@ test-suite test
                      , ambiata-disorder-core
                      , temporary
                      , text                            == 1.2.*
-                     , QuickCheck                      == 2.7.*
+                     , QuickCheck                      == 2.8.*
                      , quickcheck-instances            == 0.3.*
                      , conduit                         == 1.2.*
                      , conduit-extra                   == 1.1.*
