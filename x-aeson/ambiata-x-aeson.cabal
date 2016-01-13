@@ -42,7 +42,7 @@ test-suite test
                      , base
                      , ambiata-disorder-aeson
                      , ambiata-disorder-core
-                     , QuickCheck                      == 2.7.*
+                     , QuickCheck                      == 2.8.*
                      , quickcheck-instances            == 0.3.*
                      , text
                      , ambiata-x-aeson
