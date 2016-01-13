@@ -19,7 +19,7 @@ library
                      , htoml                           >= 0.1.0.3    && < 0.2
                      , lens                            >= 4.6        && < 4.9
                      , text                            == 1.2.*
-                     , time                            == 1.5.*
+                     , time                            >= 1.4        && < 1.6
 
   ghc-options:
                        -Wall
