@@ -13,11 +13,9 @@ module X.Options.Applicative (
   , dryRunFlag
   ) where
 
-import           Control.Monad ((>>=), (=<<))
-import           Control.Monad.Trans.Reader (ReaderT(..))
+import           Control.Monad ((>>=))
 
 import qualified Data.Attoparsec.Text as A
-import           Data.Either (either)
 import           Data.Eq (Eq)
 import           Data.Function (($), (.))
 import           Data.Functor (fmap)
@@ -48,7 +46,7 @@ data SafeCommand a =
 -- | Turn an attoparsec parser into a ReadM
 pOption :: A.Parser a -> ReadM a
 pOption p =
-  either readerError pure =<< (ReadM . ReaderT $ pure . A.parseOnly p . T.pack)
+  eitherReader (A.parseOnly p . T.pack)
 
 textRead :: ReadM Text
 textRead = fmap T.pack str
