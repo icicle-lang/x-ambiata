@@ -4,6 +4,8 @@ module X.Language.Haskell.TH (
     qmaybe
   , qeither
   , qparse
+  , dataExp
+  , textExp
   ) where
 
 
@@ -32,7 +34,7 @@ qmaybe parse = qparse $ \s ->
     Nothing ->
       P.error $ "Failed to parse quasi quoter: " <> s
     Just m ->
-      dataToExpQ (const Nothing `extQ` textExp) m
+      dataExp m
 
 qeither :: (Data a, Show b) => (T.Text -> Either b a) -> QuasiQuoter
 qeither parse = qparse $ \s ->
@@ -40,8 +42,10 @@ qeither parse = qparse $ \s ->
     Left b ->
       P.error $ "Failed to parse quasi quoter: " <> show b
     Right a ->
-      dataToExpQ (const Nothing `extQ` textExp) a
+      dataExp a
 
+dataExp :: Data a => a -> Q Exp
+dataExp a = dataToExpQ (const Nothing `extQ` textExp) a
 
 textExp :: T.Text -> Maybe ExpQ
 textExp = pure . appE (varE 'T.pack) . litE . StringL . T.unpack
