@@ -1,17 +1,26 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE DeriveDataTypeable #-}
 module X.Data.Conduit.Binary (
-    slurp
+    BinaryException(..)
+  , slurp
   , slurpWithBuffer
   , slurpHandle
   , slurpHandleWithBuffer
+  , sepByByteBounded
   ) where
 
+import qualified Control.Exception as E
+import           Control.Monad (unless)
+import           Control.Monad.Trans (lift)
 import           Control.Monad.IO.Class
 import           Control.Monad.Trans.Resource
 
+import           Data.ByteString (ByteString)
 import qualified Data.ByteString as BS
 import           Data.Conduit
+import           Data.Typeable (Typeable)
+import           Data.Word (Word8)
 
 import           System.IO
 
@@ -79,3 +88,27 @@ slurpHandleWithBuffer handle offset count' buffer = do
           else do
             yield bs
             pullLimited c'
+
+data BinaryException = LengthExceeded Int
+  deriving (Eq, Show, Typeable)
+
+instance E.Exception BinaryException
+
+sepByByteBounded :: MonadThrow m => Word8 -> Int -> Conduit ByteString m ByteString
+sepByByteBounded s n =
+  awaitBytes 0 BS.empty
+    where
+      awaitBytes len buf = await >>= maybe (finish buf) (process len buf)
+
+      finish buf = unless (BS.null buf) (yield buf)
+
+      process len buf bs =
+        let (line, rest) = BS.break (== s) bs
+            len' = len + BS.length line in
+        if len' > n
+          then lift $ monadThrow (LengthExceeded n)
+          else case BS.uncons rest of
+            Just (_, rest') ->
+              yield (buf `BS.append` line) >> process 0 BS.empty rest'
+            _ ->
+              awaitBytes len' $ buf `BS.append` bs
