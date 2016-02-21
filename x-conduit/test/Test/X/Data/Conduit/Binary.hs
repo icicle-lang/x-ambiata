@@ -43,6 +43,16 @@ prop_slurp =
             r <- runResourceT $ (slurpWithBuffer f (toInteger offset) (Just $ toInteger chunk) buffer) $$ sinkLbs
             pure $ r === (LBS.fromChunks . return . BS.take chunk . BS.drop offset $ bs)
 
+prop_sepByByteBounded :: Property
+prop_sepByByteBounded =
+  forAll arbitrary $ \bs -> testIO $
+    withTempDirectory "." "conduit" $ \p -> do
+      let f = p </> "file"
+      BS.writeFile f bs
+      r1 <- runResourceT $ (slurp f 0 Nothing) =$= sepByByteBounded 0x0a 16384 $$ sinkLbs
+      r2 <- runResourceT $ (slurp f 0 Nothing) =$= lines $$ sinkLbs
+      pure $ r1 === r2
+
 return []
 tests :: IO Bool
 tests = $quickCheckAll
