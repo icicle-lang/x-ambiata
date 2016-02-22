@@ -18,7 +18,8 @@ import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as LBS
 import           Data.Conduit
 import           Data.Conduit.Binary
-
+import           Data.Conduit.List (consume)
+import qualified Data.List as L
 import           Disorder.Core.IO
 
 import           Prelude ((-), toInteger, fromIntegral, (/=))
@@ -65,6 +66,16 @@ prop_sepByByteBounded_lines =
       r1 <- runResourceT $ (slurp f 0 Nothing) =$= sepByByteBounded 0x0a 16384 $$ sinkLbs
       r2 <- runResourceT $ (slurp f 0 Nothing) =$= lines $$ sinkLbs
       pure $ r1 === r2
+
+-- Data for this test was randomly generated.
+prop_sepByByteBounded_psv :: Property
+prop_sepByByteBounded_psv = testIO $ do
+  let fp = "test/data/test.psv"
+  r1 <- runResourceT $ slurp fp 0 Nothing =$= sepByByteBounded nl 65536 $$ consume
+  pure $ L.length r1 === 200
+  where
+    nl = fromIntegral $ ord '\n'
+
 
 return []
 tests :: IO Bool
