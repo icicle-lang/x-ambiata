@@ -10,6 +10,7 @@ import           Control.Applicative
 
 import           Data.Function
 import           Data.Bool
+import           Data.Char (ord)
 import           Data.Int
 import           Data.Maybe
 import           Data.ByteString
@@ -17,10 +18,11 @@ import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as LBS
 import           Data.Conduit
 import           Data.Conduit.Binary
-
+import           Data.Conduit.List (consume)
+import qualified Data.List as L
 import           Disorder.Core.IO
 
-import           Prelude ((-), toInteger)
+import           Prelude ((-), toInteger, fromIntegral, (/=))
 
 import           System.IO
 import           System.IO.Temp
@@ -44,14 +46,36 @@ prop_slurp =
             pure $ r === (LBS.fromChunks . return . BS.take chunk . BS.drop offset $ bs)
 
 prop_sepByByteBounded :: Property
-prop_sepByByteBounded =
+prop_sepByByteBounded = forAll (arbitrary `suchThat` (elem nl)) $ \bs -> 
+    testIO $ withSystemTempDirectory "conduit" $ \p -> do
+      let fp = p </> "file"
+      BS.writeFile fp bs
+      r1 <- runResourceT $ slurp fp 0 Nothing =$= sepByByteBounded nl 65536 $$ sinkLbs
+      r2 <- LBS.filter (/= nl) <$> LBS.readFile fp
+      pure $ r1 === r2
+  where
+    nl = fromIntegral $ ord '\n'
+  
+
+prop_sepByByteBounded_lines :: Property
+prop_sepByByteBounded_lines =
   forAll arbitrary $ \bs -> testIO $
-    withTempDirectory "." "conduit" $ \p -> do
+    withSystemTempDirectory "conduit" $ \p -> do
       let f = p </> "file"
       BS.writeFile f bs
       r1 <- runResourceT $ (slurp f 0 Nothing) =$= sepByByteBounded 0x0a 16384 $$ sinkLbs
       r2 <- runResourceT $ (slurp f 0 Nothing) =$= lines $$ sinkLbs
       pure $ r1 === r2
+
+-- Data for this test was randomly generated.
+prop_sepByByteBounded_psv :: Property
+prop_sepByByteBounded_psv = testIO $ do
+  let fp = "test/data/test.psv"
+  r1 <- runResourceT $ slurp fp 0 Nothing =$= sepByByteBounded nl 65536 $$ consume
+  pure $ L.length r1 === 200
+  where
+    nl = fromIntegral $ ord '\n'
+
 
 return []
 tests :: IO Bool
