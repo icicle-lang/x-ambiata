@@ -1,0 +1,43 @@
+name:                  ambiata-x-show
+version:               0.0.1
+license:               AllRightsReserved
+author:                Ambiata <info@ambiata.com>
+maintainer:            Ambiata <info@ambiata.com>
+copyright:             (c) 2015 Ambiata.
+synopsis:              ambiata-x-show.
+category:              Prelude
+cabal-version:         >= 1.8
+build-type:            Simple
+description:           ambiata-x-show.
+
+library
+  build-depends:
+                       base                            >= 4.6        && < 5
+                     , ambiata-p
+
+  ghc-options:
+                       -Wall
+
+  hs-source-dirs:
+                       src
+
+
+  exposed-modules:
+                       X.Text.Show
+
+test-suite test
+  type:                exitcode-stdio-1.0
+
+  main-is:             test.hs
+
+  ghc-options:         -Wall -threaded -O2
+
+  hs-source-dirs:
+                       test
+
+  build-depends:       base
+                     , ambiata-disorder-core
+                     , ambiata-p
+                     , ambiata-x-show
+                     , QuickCheck                      == 2.8.*
+                     , quickcheck-instances            == 0.3.*
