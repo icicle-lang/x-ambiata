@@ -3,13 +3,18 @@
 {-# LANGUAGE RankNTypes #-}
 module X.Control.Monad.Catch (
     bracketF
+  , hushM
   ) where
 
 import           Control.Monad (return, liftM)
-import           Control.Monad.Catch (MonadMask(..), SomeException, catchAll, throwM)
+import           Control.Monad.Catch (catchAll, throwM, handle)
+import           Control.Monad.Catch (Exception(..), SomeException)
+import           Control.Monad.Catch (MonadCatch(..), MonadMask(..))
 
+import           Data.Bool (Bool)
 import           Data.Either (Either(..), either)
 import           Data.Function (($), const, id)
+import           Data.Maybe (Maybe(..))
 
 
 data BracketResult a =
@@ -37,3 +42,25 @@ bracketF a f g =
       BracketOk b -> do
         z <- f a'
         return $ either id (const b) z
+
+-- | Run an action, turning exceptions which pass the predicate in to 'Nothing'
+--   and re-throwing the rest.
+--
+--   Usage:
+--   @
+--   tryOpenFile :: MonadIO m => FilePath -> m (Maybe Handle)
+--   tryOpenFile path =
+--     liftIO . hushM isDoesNotExistError $
+--       openBinaryFile path ReadMode
+--   @
+hushM :: (MonadCatch m, Exception e) => (e -> Bool) -> m a -> m (Maybe a)
+hushM p m =
+  let
+    onError e =
+      if p e then
+        return Nothing
+      else
+        throwM e
+  in
+    handle onError $
+      liftM Just m
