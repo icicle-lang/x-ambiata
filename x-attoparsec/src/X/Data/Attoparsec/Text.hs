@@ -2,6 +2,7 @@
 module X.Data.Attoparsec.Text (
     module X
   , eitherText
+  , manyAnd'
   , positiveIntegerParser
   , positiveIntParser
   , startsWith
@@ -35,3 +36,13 @@ positiveIntParser =
 --   usage: takeWhile (/= '-') >>= eitherText . parseTimestamp
 eitherText :: Either T.Text a -> Parser a
 eitherText = either (fail . T.unpack) pure
+
+-- | Like 'Data.Attoparsec.Text.manyTill'', but returns the value matched by 
+-- the end parser as well.
+manyAnd' :: Parser a -> Parser b -> Parser ([a], b)
+manyAnd' p end = go
+  where
+    go = (end >>= (pure . ((,) []))) `mplus` liftM2' f p go
+
+    f x (xs, y) = (x : xs, y)
+{-# INLINE manyAnd' #-}
