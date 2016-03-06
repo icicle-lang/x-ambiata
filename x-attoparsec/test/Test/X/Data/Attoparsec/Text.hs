@@ -3,11 +3,15 @@
 module Test.X.Data.Attoparsec.Text where
 
 import qualified Data.Text as T
-import Data.Monoid
+import           Data.Monoid
+
+import           Disorder.Core.UniquePair (UniquePair(..))
+
 import           System.IO ()
 
 import           Test.QuickCheck
 import           Test.QuickCheck.Instances ()
+import           Test.X.Data.Attoparsec.Arbitrary
 
 import           Data.Attoparsec.Text
 import           X.Data.Attoparsec.Text
@@ -41,6 +45,13 @@ prop_eitherTextFailed :: T.Text -> Property
 prop_eitherTextFailed t =
   sameParsers (takeText >>= eitherText . Left) (fail (T.unpack t) :: Parser T.Text) t
 
+prop_manyAnd' :: UniquePair NEText -> Property
+prop_manyAnd' (UniquePair (NEText a) (NEText b)) = forAll (arbitrary `suchThat` (>= 1) :: Gen Int) $ \n ->
+  let as = replicate n a
+      ab = T.concat as <> b
+      p = manyAnd' (string a) (string b)
+      r = parseOnly p ab in
+  r === Right (as, b)
 
 ----------
 -- HELPERS
