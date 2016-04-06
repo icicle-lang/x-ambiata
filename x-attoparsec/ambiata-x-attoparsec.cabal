@@ -12,7 +12,7 @@ description:           x-attoparsec.
 
 library
   build-depends:
-                       attoparsec                      == 0.12.*
+                       attoparsec                      >= 0.12       && < 0.14
                      , base                            >= 3          && < 5
                      , bytestring                      == 0.10.*
                      , ambiata-p
