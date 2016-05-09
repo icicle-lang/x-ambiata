@@ -13,5 +13,7 @@ data IsWord =
   deriving (Eq, Show)
 
 data ParseTrie =
-  ParseTrie IsWord (Map ByteString ParseTrie)
+    EmptyParseTrie
+  | ParseTrie !IsWord !(Map ByteString ParseTrie)
   deriving (Eq, Show)
+
