@@ -40,6 +40,7 @@ data RunType =
 
 data SafeCommand a =
     VersionCommand
+  | DependencyCommand
   | RunCommand RunType a
   deriving (Eq, Show)
 
@@ -74,6 +75,7 @@ dispatch p = getArgs >>= \x -> case x of
 safeCommand :: Parser a -> Parser (SafeCommand a)
 safeCommand commandParser =
       VersionCommand <$ versionFlag
+  <|> DependencyCommand <$ dependencyFlag
   <|> RunCommand <$> dryRunFlag <*> commandParser
 
 versionFlag :: Parser ()
@@ -82,6 +84,12 @@ versionFlag =
        short 'v'
     <> long "version"
     <> help "Version information"
+
+dependencyFlag :: Parser ()
+dependencyFlag =
+  flag' () $
+       long "dependencies"
+    <> hidden
 
 dryRunFlag :: Parser RunType
 dryRunFlag =
