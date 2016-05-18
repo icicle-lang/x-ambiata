@@ -89,7 +89,7 @@ dependencyFlag :: Parser ()
 dependencyFlag =
   flag' () $
        long "dependencies"
-    <> hidden
+    <> help "Dependency information"
 
 dryRunFlag :: Parser RunType
 dryRunFlag =
