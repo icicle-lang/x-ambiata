@@ -16,7 +16,7 @@ library
                      , ambiata-x-exception
                      , exceptions                      >= 0.6        && < 0.9
                      , text                            == 1.2.*
-                     , transformers                    >= 0.4        && < 0.5
+                     , transformers                    >= 0.4        && < 0.6
 
   ghc-options:
                        -Wall
@@ -43,6 +43,6 @@ test-suite test
                      , ambiata-disorder-core
                      , ambiata-x-eithert
                      , text                            == 1.2.*
-                     , transformers                    >= 0.4        && < 0.5
+                     , transformers                    >= 0.4        && < 0.6
                      , QuickCheck                      == 2.8.*
                      , quickcheck-instances            == 0.3.*
