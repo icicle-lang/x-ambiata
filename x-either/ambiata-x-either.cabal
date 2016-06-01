@@ -12,15 +12,17 @@ description:           x-either.
 
 library
   build-depends:
-                       base                            >= 4.6        && < 5
+                       base                            >= 4.6        && < 6
                      , ambiata-x-exception
-                     , bifunctors                      >= 4.2        && < 5
+                     , bifunctors                      >= 4.2        && < 6
                      , exceptions                      >= 0.6        && < 0.9
                      , either                          >= 4.3        && < 4.5
                      , text                            == 1.2.*
 
   ghc-options:
                        -Wall
+  if impl(ghc >= 8.0)
+    ghc-options:       -fno-warn-redundant-constraints
 
   hs-source-dirs:
                        src
