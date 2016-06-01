@@ -12,8 +12,8 @@ description:           x-aeson.
 
 library
   build-depends:
-                       aeson                           == 0.8.*
-                     , base                            >= 3          && < 5
+                       aeson                           >= 0.8        && < 0.12
+                     , base                            >= 3          && < 6
                      , bytestring                      == 0.10.*
                      , text                            >= 1.1        && < 1.3
 
