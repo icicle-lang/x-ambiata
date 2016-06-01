@@ -21,7 +21,7 @@ library
   ghc-options:
                        -Wall
   if impl(ghc >= 8.0)
-    ghc-options:       -fno-warn-redundant-constraints
+    ghc-options:       -fno-warn-redundant-constraints  -fno-warn-missing-pattern-synonym-signatures
 
   hs-source-dirs:
                        src

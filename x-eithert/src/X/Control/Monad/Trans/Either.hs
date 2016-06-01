@@ -1,7 +1,6 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE PatternSynonyms #-}
 {-# LANGUAGE RankNTypes #-}
-{-# OPTIONS_GHC -fno-warn-missing-pattern-synonym-signatures #-}
 module X.Control.Monad.Trans.Either (
   -- * Control.Monad.Trans.Either
     EitherT
