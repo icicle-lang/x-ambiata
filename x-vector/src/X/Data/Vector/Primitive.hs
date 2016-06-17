@@ -12,14 +12,25 @@ module X.Data.Vector.Primitive (
   -- ** Monadic mapping
   , mapMaybeM
   , imapMaybeM
+
+  -- * Modifying vectors
+
+  -- ** Transposition
+  , transpose
   ) where
 
+import qualified Data.Vector as Boxed
 import           Data.Vector.Primitive as Primitive
 
 import           P hiding (mapMaybe)
 
 import qualified X.Data.Vector.Generic as Generic
 
+
+transpose :: Prim a => Boxed.Vector (Vector a) -> Boxed.Vector (Vector a)
+transpose =
+  Generic.transpose
+{-# INLINE transpose #-}
 
 mapMaybe :: (Prim a, Prim b) => (a -> Maybe b) -> Vector a -> Vector b
 mapMaybe =
