@@ -12,14 +12,25 @@ module X.Data.Vector.Storable (
   -- ** Monadic mapping
   , mapMaybeM
   , imapMaybeM
+
+  -- * Modifying vectors
+
+  -- ** Transposition
+  , transpose
   ) where
 
+import qualified Data.Vector as Boxed
 import           Data.Vector.Storable as Storable
 
 import           P hiding (mapMaybe)
 
 import qualified X.Data.Vector.Generic as Generic
 
+
+transpose :: Storable a => Boxed.Vector (Vector a) -> Boxed.Vector (Vector a)
+transpose =
+  Generic.transpose
+{-# INLINE transpose #-}
 
 mapMaybe :: (Storable a, Storable b) => (a -> Maybe b) -> Vector a -> Vector b
 mapMaybe =

@@ -12,6 +12,11 @@ module X.Data.Vector (
   -- ** Monadic mapping
   , mapMaybeM
   , imapMaybeM
+
+  -- * Modifying vectors
+
+  -- ** Transposition
+  , transpose
   ) where
 
 import           Data.Vector as Boxed
@@ -20,6 +25,11 @@ import           P hiding (mapMaybe)
 
 import qualified X.Data.Vector.Generic as Generic
 
+
+transpose :: Vector (Vector a) -> Vector (Vector a)
+transpose =
+  Generic.transpose
+{-# INLINE transpose #-}
 
 mapMaybe :: (a -> Maybe b) -> Vector a -> Vector b
 mapMaybe =

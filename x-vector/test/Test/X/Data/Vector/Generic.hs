@@ -10,13 +10,35 @@ import           P
 
 import           System.IO (IO)
 
-import           Test.QuickCheck (Property, (===), quickCheckAll)
+import           Test.QuickCheck (Property, (===), quickCheckAll, counterexample)
 import           Test.QuickCheck.Function (Fun, apply)
 import           Test.QuickCheck.Instances ()
 
 import qualified X.Data.Vector as Boxed
 import qualified X.Data.Vector.Generic as Generic
+import qualified X.Data.Vector.Unboxed as Unboxed
 
+
+prop_transpose :: [[Int]] -> Property
+prop_transpose xss =
+  let
+    yss =
+      List.transpose xss
+
+    zss =
+      Boxed.toList .
+      Boxed.map Unboxed.toList .
+      Generic.transpose .
+      Boxed.map Unboxed.fromList $
+      Boxed.fromList xss
+  in
+    counterexample "=== Original ===" .
+    counterexample (show xss) .
+    counterexample "=== Data.List ===" .
+    counterexample (show yss) .
+    counterexample "=== X.Data.Vector ===" .
+    counterexample (show zss) $
+      yss == zss
 
 prop_mapMaybe :: Fun Int (Maybe Int) -> [Int] -> Property
 prop_mapMaybe f =
