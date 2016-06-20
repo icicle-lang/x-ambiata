@@ -1,3 +1,4 @@
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
@@ -15,6 +16,7 @@ import           System.IO (IO)
 import           Text.Show
 
 import           Disorder.Aeson
+import           Disorder.Core
 
 import           Test.QuickCheck
 import           Test.QuickCheck.Instances ()
@@ -59,8 +61,18 @@ prop_asText t =
 
 prop_as :: Text -> Property
 prop_as t =
-  asWith (parseJSON :: Value -> Parser Text) t === as t
+  discardError (asWith (parseJSON :: Value -> Parser Text) t)
+  ===
+  discardError (as t)
+
+discardError :: Either a b -> Either () b
+discardError = \case
+  Left _ ->
+    Left ()
+  Right x ->
+    Right x
 
 return []
 tests :: IO Bool
-tests = $quickCheckAll
+tests =
+  $disorderCheckEnvAll TestRunMore
