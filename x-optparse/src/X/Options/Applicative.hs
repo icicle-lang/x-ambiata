@@ -4,6 +4,8 @@ module X.Options.Applicative (
     module X
   , RunType (..)
   , SafeCommand (..)
+  , maybeTextReader
+  , eitherTextReader
   , pOption
   , textRead
   , command'
@@ -17,9 +19,11 @@ import           Control.Monad ((>>=))
 
 import qualified Data.Attoparsec.Text as A
 import           Data.Eq (Eq)
+import           Data.Either (Either (..), either)
 import           Data.Function (($), (.))
 import           Data.Functor (fmap)
 import           Data.Monoid (mempty)
+import           Data.Maybe (Maybe, maybe)
 import           Data.String (String)
 import           Data.Text (Text)
 import qualified Data.Text as T
@@ -44,7 +48,19 @@ data SafeCommand a =
   | RunCommand RunType a
   deriving (Eq, Show)
 
--- | Turn an attoparsec parser into a ReadM
+-- | Turn a parser into a ReadM
+maybeTextReader :: (Text -> Maybe a) -> ReadM a
+maybeTextReader f =
+  eitherReader $ \s ->
+    maybe (Left $ "Failed to parse: " <> s) pure . f . T.pack $ s
+
+-- | Turn a parser into a ReadM
+eitherTextReader :: (e -> Text) -> (Text -> Either e a) -> ReadM a
+eitherTextReader render f =
+  eitherReader $
+    either (Left . T.unpack . render) Right . f . T.pack
+
+-- | Turn apn attoparsec parser into a ReadM
 pOption :: A.Parser a -> ReadM a
 pOption p =
   eitherReader (A.parseOnly p . T.pack)
