@@ -4,6 +4,8 @@
   sha1 = "9268b44228d8ec534f70150cf194689a84e05fa7"
 
 [build.dist]
+  MAFIA_HAPPY = "true"
   HADDOCK = "true"
 
 [build.branches]
+  MAFIA_HAPPY = "true"
