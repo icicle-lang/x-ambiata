@@ -26,6 +26,7 @@ library
 
 
   exposed-modules:
+                       X.Data.Attoparsec.ByteString
                        X.Data.Attoparsec.ByteString.Ascii
                        X.Data.Attoparsec.Text
 
