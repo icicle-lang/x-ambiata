@@ -28,6 +28,7 @@ library
 
 
   exposed-modules:
+                       X.Data.Conduit
                        X.Data.Conduit.Binary
 
 test-suite test
