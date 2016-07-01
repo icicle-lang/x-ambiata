@@ -41,8 +41,7 @@ test-suite test
                        test
 
   build-depends:
-                       attoparsec
-                     , base
+                       base
                      , ambiata-disorder-core
                      , ambiata-p
                      , bytestring                      == 0.10.*
