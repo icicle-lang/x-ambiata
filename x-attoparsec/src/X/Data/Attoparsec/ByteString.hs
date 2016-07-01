@@ -4,11 +4,12 @@
 {-# LANGUAGE LambdaCase #-}
 
 module X.Data.Attoparsec.ByteString (
-    sepByByte1
+    module X
+  , sepByByte1
   ) where
 
-import           Data.Attoparsec.ByteString (Parser)
-import           Data.Attoparsec.ByteString (peekWord8, anyWord8)
+import           Data.Attoparsec.ByteString as X
+
 import           Data.Word (Word8)
 
 import           P

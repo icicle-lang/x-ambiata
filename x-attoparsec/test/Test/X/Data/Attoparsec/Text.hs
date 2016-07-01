@@ -9,7 +9,6 @@ import           System.IO ()
 import           Test.QuickCheck
 import           Test.QuickCheck.Instances ()
 
-import           Data.Attoparsec.Text
 import           X.Data.Attoparsec.Text
 
 prop_positiveIntegerParserSuccess :: Positive Integer -> Property

@@ -4,7 +4,6 @@
 
 module Test.X.Data.Attoparsec.ByteString where
 
-import           Data.Attoparsec.ByteString (parseOnly, notWord8)
 import qualified Data.ByteString as BS
 import           Data.Word (Word8)
 
