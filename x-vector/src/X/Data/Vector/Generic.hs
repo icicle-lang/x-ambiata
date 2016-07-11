@@ -32,7 +32,10 @@ module X.Data.Vector.Generic (
   -- ** Transposition
   , transpose
 
-  -- * Fusion support
+  -- ** Merging
+  , merge
+  , Stream.MergePullFrom(..)
+
   ) where
 
 import           Control.Monad.ST (ST)
@@ -193,6 +196,12 @@ mapAccumulate f z =
   Stream.inplace (Stream.mapAccumulate f z) id
 {-# INLINE mapAccumulate #-}
 
+
+merge :: Vector v a => (a -> a -> Stream.MergePullFrom a) -> v a -> v a -> v a
+merge f l r
+ = Stream.vectorOfStream
+ $ Stream.merge f (Stream.streamOfVector l) (Stream.streamOfVector r)
+{-# INLINE merge #-}
 
 
 ------------------------------------------------------------------------

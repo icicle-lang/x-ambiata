@@ -3,20 +3,30 @@
 module X.Data.Vector.Unboxed (
     module Unboxed
 
+  -- * Accessors
+
+  -- ** Destructors
+  , uncons
+
   -- * Elementwise operations
 
   -- ** Mapping
   , mapMaybe
   , imapMaybe
+  , mapAccumulate
 
   -- ** Monadic mapping
   , mapMaybeM
   , imapMaybeM
+  , mapAccumulateM
 
   -- * Modifying vectors
 
   -- ** Transposition
   , transpose
+
+  -- ** Merging
+  , merge
   ) where
 
 import qualified Data.Vector as Boxed
@@ -51,3 +61,22 @@ imapMaybeM :: (Monad m, Unbox a, Unbox b) => (Int -> a -> m (Maybe b)) -> Vector
 imapMaybeM =
   Generic.imapMaybeM
 {-# INLINE imapMaybeM #-}
+
+mapAccumulate :: (Unbox elt, Unbox elt') => (acc -> elt -> (acc, elt')) -> acc -> Vector elt -> Vector elt'
+mapAccumulate =
+  Generic.mapAccumulate
+{-# INLINE mapAccumulate #-}
+
+mapAccumulateM :: (Monad m, Unbox elt, Unbox elt') => (acc -> elt -> m (acc, elt')) -> acc -> Vector elt -> m (Vector elt')
+mapAccumulateM =
+  Generic.mapAccumulateM
+{-# INLINE mapAccumulateM #-}
+
+merge :: Unbox a => (a -> a -> Generic.MergePullFrom a) -> Vector a -> Vector a -> Vector a
+merge =
+  Generic.merge
+{-# INLINE merge #-}
+
+uncons :: Unbox a => Vector a -> Maybe (a, Vector a)
+uncons =
+  Generic.uncons

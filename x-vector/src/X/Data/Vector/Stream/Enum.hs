@@ -22,8 +22,11 @@ enumFromM start
  where
   go s
    = return $ VS.Yield s (succ s)
+  {-# INLINE [0] go #-}
+{-# INLINE [1] enumFromM #-}
 
 enumFrom :: (Enum a) => a -> VS.Stream Identity a
 enumFrom = enumFromM
+{-# INLINE [1] enumFrom #-}
 
 
