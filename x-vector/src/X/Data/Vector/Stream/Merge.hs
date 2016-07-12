@@ -108,7 +108,7 @@ Here is a picture showing the sixteen possibilities, and which action they relat
 left-state  | right-state |         |          right-peek         |               |
             |             | Just    |  Nothing      |   Just      |  Nothing      |
 ------------|-------------|---------|---------------|-------------|---------------|
-            |    Just     | merge   | read-R        | read-L      | read-R        |
+            |    Just     | merge   | read-R        | read-L      | read-L        |
   Just      | ------------|---------|---------------|-------------|---------------|
             |   Nothing   | merge   | fill-L        | read-L      | read-L        |
 ------------|-------------|---------|---------------|-------------|---------------|
@@ -120,39 +120,92 @@ left-state  | right-state |         |          right-peek         |             
 -}
 merge :: Monad m => (a -> a -> MergePullFrom a) -> VS.Stream m a -> VS.Stream m a -> VS.Stream m a
 merge f (VS.Stream l'step l'state) (VS.Stream r'step r'state)
- = VS.Stream go'step (Just l'state, Just r'state, Nothing, Nothing)
+ = VS.Stream go'step (MergeState (Just l'state) (Just r'state) Nothing Nothing)
  where
-  -- State merge
-  go'step (ls, rs, Just lv, Just rv)
+  -- I originally had a somewhat neater version that matched against multiple things like:
+  --
+  -- > go'step (MergeResult ls rs (Just lv) (Just rv)) = doMerge lv rv
+  -- > go'step ... = rest...
+  --
+  -- however, pattern match desugaring ends up producing something like
+  --
+  -- > fail = rest
+  -- > go'step = case ... of
+  -- >              Just lv -> case ... of
+  -- >                          Just rv -> doMerge
+  -- >                          Nothing -> fail
+  -- >              Nothing -> fail
+  --
+  -- and since 'fail' is used multiple times, it won't be inlined into the result.
+  -- This doesn't play nicely with SpecConstr, I guess because it doesn't look through bindings,
+  -- so the Maybes never get removed.
+  --
+  -- The lesson here is not to use compound pattern matching in stream transformers.
+  --
+  go'step m
+   = case peekL m of
+      Just lv
+       -> case peekR m of
+           Just rv
+            -> doMerge m lv rv
+           Nothing
+            -> case stateR m of
+                Just rs
+                 -> doReadR m rs
+                Nothing
+                 -> doFillL m lv
+      Nothing
+       -> case stateL m of
+           Just ls
+            -> doReadL m ls
+           Nothing 
+            -> case peekR m of
+                Just rv
+                 -> doFillR m rv
+                Nothing
+                 -> case stateR m of
+                     Just rs
+                      -> doReadR m rs
+                     Nothing
+                      -> return $ VS.Done
+  {-# INLINE go'step #-}
+
+  doMerge m lv rv
    = case f lv rv of
-      MergePullLeft  a -> return $ VS.Yield a (ls, rs, Nothing, Just rv)
-      MergePullRight a -> return $ VS.Yield a (ls, rs, Just lv, Nothing)
-      MergePullBoth  a -> return $ VS.Yield a (ls, rs, Nothing, Nothing)
+      MergePullLeft  a -> return $ VS.Yield a m { peekL = Nothing }
+      MergePullRight a -> return $ VS.Yield a m { peekR = Nothing }
+      MergePullBoth  a -> return $ VS.Yield a m { peekL = Nothing, peekR = Nothing }
+  {-# INLINE doMerge #-}
 
-  -- State read-L
-  go'step (Just ls, rs, Nothing, rv)
-   = l'step ls >>=
-   \case
-      VS.Yield lv ls' -> return $ VS.Skip (Just ls', rs, Just lv, rv)
-      VS.Skip     ls' -> return $ VS.Skip (Just ls', rs, Nothing, rv)
-      VS.Done         -> return $ VS.Skip (Nothing,  rs, Nothing, rv)
+  doReadL m ls
+   = do step <- l'step ls
+        case step of
+          VS.Yield lv ls' -> return $ VS.Skip m { stateL = Just ls', peekL = Just lv }
+          VS.Skip     ls' -> return $ VS.Skip m { stateL = Just ls', peekL = Nothing }
+          VS.Done         -> return $ VS.Skip m { stateL = Nothing,  peekL = Nothing }
 
-  -- State read-R
-  go'step (ls, Just rs, lv, Nothing)
-   = r'step rs >>=
-   \case
-      VS.Yield rv rs' -> return $ VS.Skip (ls, Just rs', lv, Just rv)
-      VS.Skip     rs' -> return $ VS.Skip (ls, Just rs', lv, Nothing)
-      VS.Done         -> return $ VS.Skip (ls, Nothing,  lv, Nothing)
+  {-# INLINE doReadL #-}
+  doReadR m rs
+   = do step <- r'step rs
+        case step of
+          VS.Yield rv rs' -> return $ VS.Skip m { stateR = Just rs', peekR = Just rv }
+          VS.Skip     rs' -> return $ VS.Skip m { stateR = Just rs', peekR = Nothing }
+          VS.Done         -> return $ VS.Skip m { stateR = Nothing,  peekR = Nothing }
+  {-# INLINE doReadR #-}
+  doFillL m lv
+   = return $ VS.Yield lv m { peekL = Nothing }
+  {-# INLINE doFillL #-}
+  doFillR m rv
+   = return $ VS.Yield rv m { peekR = Nothing }
+  {-# INLINE doFillR #-}
 
-  -- State fill-L
-  go'step (ls, Nothing, Just lv, Nothing)
-   = return $ VS.Yield lv (ls, Nothing, Nothing, Nothing)
-  -- State fill-R
-  go'step (Nothing, rs, Nothing, Just rv)
-   = return $ VS.Yield rv (Nothing, rs, Nothing, Nothing)
+{-# INLINE merge #-}
 
-  -- State done
-  go'step (Nothing, Nothing, Nothing, Nothing)
-   = return $ VS.Done
+data MergeState l r a
+ = MergeState
+ { stateL :: Maybe l
+ , stateR :: Maybe r
+ , peekL  :: Maybe a
+ , peekR  :: Maybe a }
+
 
