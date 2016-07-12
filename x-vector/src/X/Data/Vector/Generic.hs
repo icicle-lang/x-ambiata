@@ -186,12 +186,12 @@ imapMaybeM f =
   Stream.inplaceM (Stream.imapMaybeM f) toMax
 {-# INLINE imapMaybeM #-}
 
-mapAccumulateM :: (Monad m, Vector v elt, Vector v' elt') => (acc -> elt -> m (acc, elt')) -> acc -> v elt -> m (v' elt')
+mapAccumulateM :: (Monad m, Vector v elt, Vector v elt') => (acc -> elt -> m (acc, elt')) -> acc -> v elt -> m (v elt')
 mapAccumulateM f z =
   Stream.inplaceM (Stream.mapAccumulateM f z) id
 {-# INLINE mapAccumulateM #-}
 
-mapAccumulate :: (Vector v elt, Vector v' elt') => (acc -> elt -> (acc, elt')) -> acc -> v elt -> v' elt'
+mapAccumulate :: (Vector v elt, Vector v elt') => (acc -> elt -> (acc, elt')) -> acc -> v elt -> v elt'
 mapAccumulate f z =
   Stream.inplace (Stream.mapAccumulate f z) id
 {-# INLINE mapAccumulate #-}

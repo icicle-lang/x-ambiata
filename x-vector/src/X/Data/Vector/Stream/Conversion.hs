@@ -26,12 +26,14 @@ import qualified Data.Vector.Fusion.Bundle as Bundle
 import qualified Data.Vector.Fusion.Bundle.Monadic as MBundle
 
 import Data.Functor.Identity (runIdentity, Identity)
+import Data.Vector.Fusion.Util (Id(..))
 
 import           P
 
 vectorOfStream :: VG.Vector v a => VS.Stream Identity a -> v a
 vectorOfStream = runIdentity . vectorOfStreamM
 {-# INLINE vectorOfStream #-}
+
 
 streamOfVector :: VG.Vector v a => v a -> VS.Stream Identity a
 streamOfVector = streamOfVectorM
@@ -92,7 +94,7 @@ streamOfListM = VS.fromList
 
 
 -- | Called @unstreamM@ in Data.Vector.Generic, but not exported
-vectorOfBundleM :: (Monad m, VG.Vector v a) => MBundle.Bundle m u a -> m (v a)
+vectorOfBundleM :: (Monad m, VG.Vector v a) => MBundle.Bundle m v a -> m (v a)
 vectorOfBundleM s = do
   xs <- MBundle.toList s
   return $ VG.unstream $ Bundle.unsafeFromList (MBundle.size s) xs
