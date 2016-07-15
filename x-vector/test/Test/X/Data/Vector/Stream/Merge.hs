@@ -13,9 +13,7 @@ import           Test.QuickCheck.Instances ()
 import qualified X.Data.Vector.Stream as Stream
 import qualified Data.List as List
 
-import Data.Functor.Identity
-
-viaStream2 :: (Stream.Stream Identity a -> Stream.Stream Identity a -> Stream.Stream Identity a) -> [a] -> [a] -> [a]
+viaStream2 :: (Stream.Stream Stream.Id a -> Stream.Stream Stream.Id a -> Stream.Stream Stream.Id a) -> [a] -> [a] -> [a]
 viaStream2 f xs ys =
   Stream.listOfStream $ f (Stream.streamOfList xs) (Stream.streamOfList ys)
 

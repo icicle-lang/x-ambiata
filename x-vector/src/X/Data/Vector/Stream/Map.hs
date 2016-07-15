@@ -13,7 +13,7 @@ module X.Data.Vector.Stream.Map
 
 import qualified Data.Vector.Fusion.Stream.Monadic as VS
 
-import Data.Functor.Identity (Identity)
+import Data.Vector.Fusion.Util (Id(..))
 
 import           P hiding (mapMaybe)
 
@@ -38,7 +38,7 @@ mapAccumulateM f z (VS.Stream step state)
   {-# INLINE [0] go #-}
 {-# INLINE [1] mapAccumulateM #-}
 
-mapAccumulate :: (acc -> elt -> (acc, elt')) -> acc -> VS.Stream Identity elt -> VS.Stream Identity elt'
+mapAccumulate :: (acc -> elt -> (acc, elt')) -> acc -> VS.Stream Id elt -> VS.Stream Id elt'
 mapAccumulate f z v
  = mapAccumulateM (\a b -> return $ f a b) z v
 {-# INLINE [1] mapAccumulate #-}
@@ -67,7 +67,7 @@ mapMaybeM f (VS.Stream step t) =
     VS.Stream step' t
 {-# INLINE [1] mapMaybeM #-}
 
-mapMaybe :: (a -> Maybe b) -> VS.Stream Identity a -> VS.Stream Identity b
+mapMaybe :: (a -> Maybe b) -> VS.Stream Id a -> VS.Stream Id b
 mapMaybe f = mapMaybeM (return . f)
 {-# INLINE [1] mapMaybe #-}
 
@@ -75,7 +75,7 @@ imapMaybeM :: Monad m => (Int -> a -> m (Maybe b)) -> VS.Stream m a -> VS.Stream
 imapMaybeM f = mapMaybeM (uncurry f) . VS.indexed
 {-# INLINE [1] imapMaybeM #-}
 
-imapMaybe :: (Int -> a -> Maybe b) -> VS.Stream Identity a -> VS.Stream Identity b
+imapMaybe :: (Int -> a -> Maybe b) -> VS.Stream Id a -> VS.Stream Id b
 imapMaybe f = mapMaybe (uncurry f) . VS.indexed
 {-# INLINE [1] imapMaybe #-}
 

@@ -3,6 +3,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 
 import qualified Bench.Merge as Merge
+import qualified Bench.MapMaybe as MapMaybe
 
 import           Criterion.Main
 import           Criterion.Types
@@ -25,13 +26,18 @@ main =
     defaultMainWith config
      [ bgroup "Transpose" allTranspose
      , bgroup "Merge" allMerge
+     , bgroup "MapMaybe" allMapMaybe
      ]
  where
   allTranspose = invertMap $
-   concatMap transposeBenchmarks [] -- [1000,2000,3000,4000,5000,6000,7000,8000,9000,10000]
+   concatMap transposeBenchmarks [1000,2000,3000,4000] -- 5000,6000,7000,8000,9000,10000]
 
   allMerge = invertMap $
-   concatMap mergeBenchmarks $ fmap (^ (2::Int)) [100,200,300,400,500,600,700,800,900,1000]
+   concatMap mergeBenchmarks $ fmap (^ (3::Int)) [100,200,300,400]
+
+  allMapMaybe = invertMap $
+   concatMap mapMaybeBenchmarks $ fmap (^ (3::Int)) [100,200,300,400]
+
 
   invertMap =
    fmap (uncurry bgroup) .
@@ -69,6 +75,14 @@ mergeBenchmarks size =
  where
   {-# INLINE nf2 #-}
   nf2 f x y   = nf (f x) y
+
+mapMaybeBenchmarks :: Int -> [(String, Benchmark)]
+mapMaybeBenchmarks size =
+  withPairs size $ \list1 _ vec1 _ ->
+    [ ("list",   bench (show size) $ nf MapMaybe.maybeList list1)
+    , ("vector", bench (show size) $ nf MapMaybe.maybeVector vec1)
+    , ("stream", bench (show size) $ nf MapMaybe.maybeStream vec1)
+    ]
 
 
 renderSize :: Int -> String

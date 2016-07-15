@@ -199,9 +199,15 @@ mapAccumulate f z =
 
 merge :: Vector v a => (a -> a -> Stream.MergePullFrom a) -> v a -> v a -> v a
 merge f l r
- = Stream.vectorOfStream
- $ Stream.merge f (Stream.streamOfVector l) (Stream.streamOfVector r)
+ = Stream.vectorOfStream (mergeDelay f l r)
 {-# INLINE merge #-}
+
+mergeDelay :: Vector v a => (a -> a -> Stream.MergePullFrom a) -> v a -> v a -> Stream.Stream Stream.Id a
+mergeDelay f l r
+ = let l' = Stream.streamOfVector l
+       r' = Stream.streamOfVector r
+   in  Stream.merge f l' r'
+{-# INLINE [0] mergeDelay #-}
 
 
 ------------------------------------------------------------------------

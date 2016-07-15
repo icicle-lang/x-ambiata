@@ -8,8 +8,7 @@ module X.Data.Vector.Stream.Enum
   ) where
 
 import qualified Data.Vector.Fusion.Stream.Monadic as VS
-
-import Data.Functor.Identity (Identity)
+import Data.Vector.Fusion.Util (Id(..))
 
 import           P
 
@@ -25,7 +24,7 @@ enumFromM start
   {-# INLINE [0] go #-}
 {-# INLINE [1] enumFromM #-}
 
-enumFrom :: (Enum a) => a -> VS.Stream Identity a
+enumFrom :: (Enum a) => a -> VS.Stream Id a
 enumFrom = enumFromM
 {-# INLINE [1] enumFrom #-}
 

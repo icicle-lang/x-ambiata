@@ -2,6 +2,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE PatternGuards #-}
 {-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE BangPatterns #-}
 module X.Data.Vector.Stream.Conversion
   ( vectorOfStream
   , streamOfVector
@@ -25,17 +26,25 @@ import qualified Data.Vector.Fusion.Bundle.Size    as VBS
 import qualified Data.Vector.Fusion.Bundle as Bundle
 import qualified Data.Vector.Fusion.Bundle.Monadic as MBundle
 
-import Data.Functor.Identity (runIdentity, Identity)
 import Data.Vector.Fusion.Util (Id(..))
 
 import           P
 
-vectorOfStream :: VG.Vector v a => VS.Stream Identity a -> v a
-vectorOfStream = runIdentity . vectorOfStreamM
-{-# INLINE vectorOfStream #-}
+
+vectorOfStream :: VG.Vector v a => VS.Stream Id a -> v a
+vectorOfStream !strm
+ = let !bundle = VB.fromStream strm VBS.Unknown
+   in  VG.unstream bundle
+-- Delay inlining so the rule has a chance to fire
+{-# INLINE [0] vectorOfStream #-}
+-- Short-cut fusion: converting a stream to a vector and back is identity (roughly)
+{-# RULES
+    "stream/vectorOfStream [X-Vector]" forall s.
+        VG.stream (vectorOfStream s) = VB.fromStream s VBS.Unknown
+ #-}
 
 
-streamOfVector :: VG.Vector v a => v a -> VS.Stream Identity a
+streamOfVector :: VG.Vector v a => v a -> VS.Stream Id a
 streamOfVector = streamOfVectorM
 {-# INLINE streamOfVector #-}
 
@@ -64,21 +73,59 @@ inplaceM stream size vec
 {-# INLINE inplaceM #-}
 
 inplace  :: VG.Vector v a => VG.Vector u b
-         => (VS.Stream Identity a -> VS.Stream Identity b)
+         => (VS.Stream Id a -> VS.Stream Id b)
          -> (VBS.Size -> VBS.Size)
          -> v a -> u b
 inplace stream size vec
- = runIdentity $ inplaceM stream size vec
+ = VG.unstream (inplaceDelay stream size vec)
+-- Inline the 'unstream' part as soon as possible, because these are used in rewrite rules.
+-- However, we need to delay inlining the rest of it, because otherwise the function calls
+-- get converted to lets and these get in the way of rewrite rules.
+--
+-- > inplace stream size vec
+-- >  = unstream (fromStream (stream (streamOfVector vec)) (size (Exact (length vec))))
+-- >
+-- > use_place = stream (inplace id id input_vec)
+--
+-- =(INLINE inplace)>
+--
+-- > use_place
+-- >  = stream
+-- >  ( let a = id (streamOfVector input_vec)
+-- >        b = id (Exact (length input_vec))
+-- >        c = fromStream a b
+-- >     in unstream c )
+--
+-- Here, we end up with these awful lets, so "stream (unstream ?)" cannot fire.
+-- By delaying inplaceDelay, the lets are not generated until later, and so stay out of the way.
+-- I do not know why these lets show up.
 {-# INLINE inplace #-}
 
+inplaceDelay :: VG.Vector v a => VG.Vector u b
+         => (VS.Stream Id a -> VS.Stream Id b)
+         -> (VBS.Size -> VBS.Size)
+         -> v a
+         -> VB.Bundle Id u b
+inplaceDelay stream size vec
+ = let stream' = stream (streamOfVector vec)
+       size'   = size (VBS.Exact $ VG.length vec)
+   in VB.fromStream stream' size'
+{-# INLINE [0] inplaceDelay #-}
+{-# RULES
+
+"inplaceDelay/inplaceDelay [X-Vector]"
+  forall f1 f2
+         g1 g2 s.
+  inplaceDelay f1 g1 (VG.unstream (inplaceDelay f2 g2 s)) = inplaceDelay (f1 . f2) (g1 . g2) s   #-}
 
 
 
-listOfStream :: VS.Stream Identity a -> [a]
-listOfStream = runIdentity . listOfStreamM
+
+listOfStream :: VS.Stream Id a -> [a]
+listOfStream = unId . listOfStreamM
 {-# INLINE listOfStream #-}
 
-streamOfList :: [a] -> VS.Stream Identity a
+streamOfList :: [a] -> VS.Stream Id a
 streamOfList = streamOfListM
 {-# INLINE streamOfList #-}
 
