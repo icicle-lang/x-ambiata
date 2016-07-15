@@ -58,7 +58,7 @@ benchmark bench
 
   main-is:             bench.hs
 
-  ghc-options:         -Wall -threaded -O2 -dsuppress-all -dppr-case-as-let
+  ghc-options:         -Wall -threaded -O2
 
   hs-source-dirs:
                        bench
