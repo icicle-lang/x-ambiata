@@ -3,20 +3,31 @@
 module X.Data.Vector.Primitive (
     module Primitive
 
+
+  -- * Accessors
+
+  -- ** Destructors
+  , uncons
+
   -- * Elementwise operations
 
   -- ** Mapping
   , mapMaybe
   , imapMaybe
+  , mapAccumulate
 
   -- ** Monadic mapping
   , mapMaybeM
   , imapMaybeM
+  , mapAccumulateM
 
   -- * Modifying vectors
 
   -- ** Transposition
   , transpose
+
+  -- ** Merging
+  , merge
   ) where
 
 import qualified Data.Vector as Boxed
@@ -51,3 +62,22 @@ imapMaybeM :: (Monad m, Prim a, Prim b) => (Int -> a -> m (Maybe b)) -> Vector a
 imapMaybeM =
   Generic.imapMaybeM
 {-# INLINE imapMaybeM #-}
+
+mapAccumulate :: (Prim elt, Prim elt') => (acc -> elt -> (acc, elt')) -> acc -> Vector elt -> Vector elt'
+mapAccumulate =
+  Generic.mapAccumulate
+{-# INLINE mapAccumulate #-}
+
+mapAccumulateM :: (Monad m, Prim elt, Prim elt') => (acc -> elt -> m (acc, elt')) -> acc -> Vector elt -> m (Vector elt')
+mapAccumulateM =
+  Generic.mapAccumulateM
+{-# INLINE mapAccumulateM #-}
+
+merge :: Prim a => (a -> a -> Generic.MergePullFrom a) -> Vector a -> Vector a -> Vector a
+merge =
+  Generic.merge
+{-# INLINE merge #-}
+
+uncons :: Prim a => Vector a -> Maybe (a, Vector a)
+uncons =
+  Generic.uncons

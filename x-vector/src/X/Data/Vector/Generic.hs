@@ -12,43 +12,43 @@ module X.Data.Vector.Generic (
 
   , lengths
 
+  -- ** Destructors
+  , uncons
+
   -- * Elementwise operations
 
   -- ** Mapping
   , mapMaybe
   , imapMaybe
+  , mapAccumulate
 
   -- ** Monadic mapping
   , mapMaybeM
   , imapMaybeM
+  , mapAccumulateM
 
   -- * Modifying vectors
 
   -- ** Transposition
   , transpose
 
-  -- * Fusion support
+  -- ** Merging
+  , merge
+  , Stream.MergePullFrom(..)
 
-  -- ** Conversion to/from bundles
-  , unstreamM
   ) where
 
 import           Control.Monad.ST (ST)
 
-import           Data.Vector.Fusion.Bundle (Step(..))
-import qualified Data.Vector.Fusion.Bundle as Bundle
-import           Data.Vector.Fusion.Bundle.Monadic (Bundle(..))
-import qualified Data.Vector.Fusion.Bundle.Monadic as MBundle
 import           Data.Vector.Fusion.Bundle.Size (toMax)
-import           Data.Vector.Fusion.Stream.Monadic (Stream(..))
-import qualified Data.Vector.Fusion.Stream.Monadic as Stream
+import qualified X.Data.Vector.Stream as Stream
 
 import           Data.Vector.Generic as Generic
 import qualified Data.Vector.Generic.Mutable as MGeneric
 import qualified Data.Vector.Unboxed as Unboxed
 import qualified Data.Vector.Unboxed.Mutable as MUnboxed
 
-import           P hiding (for, mapMaybe)
+import           P hiding (for, mapMaybe, splitAt)
 
 
 -- | The 'transpose' function transposes the rows and columns of its argument.
@@ -155,86 +155,60 @@ transposeJagged xss max_cols =
 
 
 lengths :: (Vector va a, Vector vv (va a), Vector vn Int) => vv (va a) -> vn Int
-lengths =
-  unstream .
-  Bundle.map Generic.length .
-  Bundle.reVector .
-  stream
+lengths = 
+  Stream.inplace (Stream.map Generic.length) id
 {-# INLINE lengths #-}
+
+uncons :: Vector v a => v a -> Maybe (a, v a)
+uncons v
+ = let (pre,post) = splitAt 1 v
+   in  (,) <$> (pre !? 0) <*> pure post
+{-# INLINE uncons #-}
+
 
 mapMaybe :: (Vector v a, Vector v b) => (a -> Maybe b) -> v a -> v b
 mapMaybe f =
-  unstream .
-  Bundle.inplace (mapMaybeStream (return . f)) toMax .
-  stream
+  Stream.inplace (Stream.mapMaybe f) toMax
 {-# INLINE mapMaybe #-}
 
 imapMaybe :: (Vector v a, Vector v b) => (Int -> a -> Maybe b) -> v a -> v b
 imapMaybe f =
-  unstream .
-  Bundle.inplace (mapMaybeStream (return . uncurry f) . Stream.indexed) toMax .
-  stream
+  Stream.inplace (Stream.imapMaybe f) toMax
 {-# INLINE imapMaybe #-}
 
 mapMaybeM :: Monad m => (Vector v a, Vector v b) => (a -> m (Maybe b)) -> v a -> m (v b)
 mapMaybeM f =
-  unstreamM .
-  mapMaybeBundle f .
-  Bundle.lift .
-  stream
+  Stream.inplaceM (Stream.mapMaybeM f) toMax
 {-# INLINE mapMaybeM #-}
 
 imapMaybeM :: Monad m => (Vector v a, Vector v b) => (Int -> a -> m (Maybe b)) -> v a -> m (v b)
 imapMaybeM f =
-  unstreamM .
-  imapMaybeBundle f .
-  Bundle.lift .
-  stream
+  Stream.inplaceM (Stream.imapMaybeM f) toMax
 {-# INLINE imapMaybeM #-}
 
-mapMaybeBundle :: Monad m => (a -> m (Maybe b)) -> Bundle m v a -> Bundle m v b
-mapMaybeBundle f Bundle {sElems = s, sSize = n} =
-  MBundle.fromStream (mapMaybeStream f s) (toMax n)
-{-# INLINE mapMaybeBundle #-}
+mapAccumulateM :: (Monad m, Vector v elt, Vector v elt') => (acc -> elt -> m (acc, elt')) -> acc -> v elt -> m (v elt')
+mapAccumulateM f z =
+  Stream.inplaceM (Stream.mapAccumulateM f z) id
+{-# INLINE mapAccumulateM #-}
 
-imapMaybeBundle :: Monad m => (Int -> a -> m (Maybe b)) -> Bundle m v a -> Bundle m v b
-imapMaybeBundle f Bundle {sElems = s, sSize = n} =
-  MBundle.fromStream (mapMaybeStream (uncurry f) $ Stream.indexed s) (toMax n)
-{-# INLINE imapMaybeBundle #-}
+mapAccumulate :: (Vector v elt, Vector v elt') => (acc -> elt -> (acc, elt')) -> acc -> v elt -> v elt'
+mapAccumulate f z =
+  Stream.inplace (Stream.mapAccumulate f z) id
+{-# INLINE mapAccumulate #-}
 
--- include/vector.h
-#define INLINE_FUSED INLINE [1]
-#define INLINE_INNER INLINE [0]
 
-mapMaybeStream :: Monad m => (a -> m (Maybe b)) -> Stream m a -> Stream m b
-mapMaybeStream f (Stream step t) =
-  let
-    step' s = do
-      r <- step s
-      case r of
-        Yield x s' -> do
-          mb <- f x
-          return $
-            case mb of
-              Nothing ->
-                Skip s'
-              Just y ->
-                Yield y s'
-        Skip s' ->
-          return $ Skip s'
-        Done ->
-          return $ Done
-    {-# INLINE_INNER step' #-}
-  in
-    Stream step' t
-{-# INLINE_FUSED mapMaybeStream #-}
+merge :: Vector v a => (a -> a -> Stream.MergePullFrom a) -> v a -> v a -> v a
+merge f l r
+ = Stream.vectorOfStream (mergeDelay f l r)
+{-# INLINE merge #-}
 
--- Not exported by Data.Vector.Generic
-unstreamM :: (Monad m, Vector v a) => Bundle m u a -> m (v a)
-unstreamM s = do
-  xs <- MBundle.toList s
-  return $ unstream $ Bundle.unsafeFromList (MBundle.size s) xs
-{-# INLINE_FUSED unstreamM #-}
+mergeDelay :: Vector v a => (a -> a -> Stream.MergePullFrom a) -> v a -> v a -> Stream.Stream Stream.Id a
+mergeDelay f l r
+ = let l' = Stream.streamOfVector l
+       r' = Stream.streamOfVector r
+   in  Stream.merge f l' r'
+{-# INLINE [0] mergeDelay #-}
+
 
 ------------------------------------------------------------------------
 -- Utils

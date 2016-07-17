@@ -29,6 +29,11 @@ library
                        X.Data.Vector.Primitive
                        X.Data.Vector.Storable
                        X.Data.Vector.Unboxed
+                       X.Data.Vector.Stream
+                       X.Data.Vector.Stream.Conversion
+                       X.Data.Vector.Stream.Enum
+                       X.Data.Vector.Stream.Map
+                       X.Data.Vector.Stream.Merge
 
 test-suite test
   type:                exitcode-stdio-1.0
