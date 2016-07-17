@@ -20,6 +20,7 @@ module X.Data.Vector.Stream.Conversion
   ) where
 
 import qualified Data.Vector.Generic               as VG
+import qualified Data.Vector.Generic.New           as VGN
 import qualified Data.Vector.Fusion.Stream.Monadic as VS
 import qualified Data.Vector.Fusion.Bundle.Monadic as VB
 import qualified Data.Vector.Fusion.Bundle.Size    as VBS
@@ -116,7 +117,17 @@ inplaceDelay stream size vec
 "inplaceDelay/inplaceDelay [X-Vector]"
   forall f1 f2
          g1 g2 s.
-  inplaceDelay f1 g1 (VG.unstream (inplaceDelay f2 g2 s)) = inplaceDelay (f1 . f2) (g1 . g2) s   #-}
+  inplaceDelay f1 g1 (VG.unstream (inplaceDelay f2 g2 s)) = inplaceDelay (f1 . f2) (g1 . g2) s
+
+  -- Depending on when VG.unstream decides to inline, we might need to deal with its unfolding.
+  -- This was necessary for GHC-7.8, with same version of vector.
+  -- Perhaps newer versions interleave rewriting with inlining.
+"inplaceDelay/new/inplaceDelay [X-Vector]"
+  forall f1 f2
+         g1 g2 s.
+  inplaceDelay f1 g1 (VG.new (VGN.unstream (inplaceDelay f2 g2 s))) = inplaceDelay (f1 . f2) (g1 . g2) s
+
+  #-}
 
 
 
