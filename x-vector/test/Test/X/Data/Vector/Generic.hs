@@ -40,6 +40,20 @@ prop_transpose xss =
     counterexample (show zss) $
       yss == zss
 
+prop_splits :: [Boxed.Vector Int] -> Property
+prop_splits xss0_list =
+  let
+    xs =
+      Boxed.concat xss0_list
+
+    xss0 =
+      Boxed.fromList xss0_list
+
+    xss =
+      Generic.unsafeSplits id xs (fmap Boxed.length xss0)
+  in
+    xss0 === xss
+
 prop_mapMaybe :: Fun Int (Maybe Int) -> [Int] -> Property
 prop_mapMaybe f =
   equivalent
