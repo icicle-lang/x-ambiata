@@ -9,11 +9,13 @@ module X.Data.Vector.Generic (
   -- * Accessors
 
   -- ** Length information
-
   , lengths
 
   -- ** Destructors
   , uncons
+
+  -- ** Extracting subvectors (slicing)
+  , unsafeSplits
 
   -- * Elementwise operations
 
@@ -155,7 +157,7 @@ transposeJagged xss max_cols =
 
 
 lengths :: (Vector va a, Vector vv (va a), Vector vn Int) => vv (va a) -> vn Int
-lengths = 
+lengths =
   Stream.inplace (Stream.map Generic.length) id
 {-# INLINE lengths #-}
 
@@ -165,6 +167,28 @@ uncons v
    in  (,) <$> (pre !? 0) <*> pure post
 {-# INLINE uncons #-}
 
+data IdxOff =
+  IdxOff !Int !Int
+
+unsafeSplits ::
+  Vector va a =>
+  Vector vb b =>
+  Vector vn Int =>
+  (va a -> b) ->
+  va a ->
+  vn Int ->
+  vb b
+unsafeSplits f xs sizes =
+  let
+    loop (IdxOff idx off) =
+      let
+        !len =
+          Generic.unsafeIndex sizes idx
+      in
+        Just (f $! Generic.unsafeSlice off len xs, IdxOff (idx + 1) (off + len))
+  in
+    Generic.unfoldrN (Generic.length sizes) loop (IdxOff 0 0)
+{-# INLINE unsafeSplits #-}
 
 mapMaybe :: (Vector v a, Vector v b) => (a -> Maybe b) -> v a -> v b
 mapMaybe f =
