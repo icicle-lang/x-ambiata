@@ -14,6 +14,7 @@ library
   build-depends:
                        base                            >= 4.6        && < 5
                      , ambiata-p
+                     , primitive                       >= 0.6        && < 0.7
                      , vector                          >= 0.10       && < 0.12
 
   ghc-options:
@@ -26,9 +27,12 @@ library
   exposed-modules:
                        X.Data.Vector
                        X.Data.Vector.Generic
+                       X.Data.Vector.Grow
                        X.Data.Vector.Primitive
+                       X.Data.Vector.Ref
                        X.Data.Vector.Storable
                        X.Data.Vector.Unboxed
+
                        X.Data.Vector.Stream
                        X.Data.Vector.Stream.Conversion
                        X.Data.Vector.Stream.Enum
