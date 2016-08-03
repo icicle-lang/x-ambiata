@@ -5,6 +5,7 @@ module X.Data.Vector.Grow (
   , length
   , capacity
   , add
+  , append
   , clear
   , freeze
   , unsafeFreeze
@@ -51,11 +52,11 @@ capacity =
   liftM (MGeneric.length . growVector) . readRef . unGrow
 {-# INLINE capacity #-}
 
-expand :: (PrimMonad m, MVector v a) => GrowState v (PrimState m) a -> m (GrowState v (PrimState m) a)
-expand gs@(GrowState n xs0) =
-  if n == MGeneric.length xs0 then
+expand :: (PrimMonad m, MVector v a) => GrowState v (PrimState m) a -> Int -> m (GrowState v (PrimState m) a)
+expand gs@(GrowState n xs0) m =
+  if n + m > MGeneric.length xs0 then
     liftM (GrowState n) $
-      MGeneric.unsafeGrow xs0 (max n 1)
+      MGeneric.unsafeGrow xs0 (max n m)
   else
     return gs
 {-# INLINE expand #-}
@@ -63,10 +64,21 @@ expand gs@(GrowState n xs0) =
 add :: (PrimMonad m, MVector v a) => Grow v (PrimState m) a -> a -> m ()
 add (Grow ref) x =
  modifyRefM ref $ \gs0 -> do
-   GrowState n xs <- expand gs0
+   GrowState n xs <- expand gs0 1
    MGeneric.unsafeWrite xs n x
    return $ GrowState (n + 1) xs
 {-# INLINE add #-}
+
+append :: (PrimMonad m, Vector v a) => Grow (Mutable v) (PrimState m) a -> v a -> m ()
+append (Grow ref) ys =
+ modifyRefM ref $ \gs0 -> do
+   let
+     m =
+       Generic.length ys
+   GrowState n xs <- expand gs0 m
+   Generic.unsafeCopy (MGeneric.unsafeSlice n m xs) ys
+   return $ GrowState (n + m) xs
+{-# INLINE append #-}
 
 clear :: PrimMonad m => Grow v (PrimState m) a -> m ()
 clear (Grow ref) =
