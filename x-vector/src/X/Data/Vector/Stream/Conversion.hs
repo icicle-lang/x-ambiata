@@ -102,7 +102,7 @@ inplace stream size vec
 -- I do not know why these lets show up.
 {-# INLINE inplace #-}
 
-inplaceDelay :: VG.Vector v a => VG.Vector u b
+inplaceDelay :: VG.Vector v a
          => (VS.Stream Id a -> VS.Stream Id b)
          -> (VBS.Size -> VBS.Size)
          -> v a

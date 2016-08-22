@@ -15,6 +15,7 @@ library
                        base                            >= 4.6        && < 5
                      , ambiata-p
                      , primitive                       >= 0.6        && < 0.7
+                     , transformers-base               == 0.4.*
                      , vector                          >= 0.10       && < 0.12
 
   ghc-options:

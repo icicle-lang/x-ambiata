@@ -78,4 +78,3 @@ imapMaybeM f = mapMaybeM (uncurry f) . VS.indexed
 imapMaybe :: (Int -> a -> Maybe b) -> VS.Stream Id a -> VS.Stream Id b
 imapMaybe f = mapMaybe (uncurry f) . VS.indexed
 {-# INLINE [1] imapMaybe #-}
-
