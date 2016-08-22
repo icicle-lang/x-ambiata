@@ -37,6 +37,7 @@ library
                        X.Data.Vector.Stream
                        X.Data.Vector.Stream.Conversion
                        X.Data.Vector.Stream.Enum
+                       X.Data.Vector.Stream.Group
                        X.Data.Vector.Stream.Map
                        X.Data.Vector.Stream.Merge
 
