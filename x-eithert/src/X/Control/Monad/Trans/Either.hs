@@ -25,11 +25,13 @@ module X.Control.Monad.Trans.Either (
   , joinErrors
   , joinErrorsEither
   , reduceEitherT
+  , tryEitherT
   ) where
 
+import           Control.Exception.Base (Exception)
 import           Control.Monad (Monad(..), (=<<), join)
 import           Control.Monad.Trans.Except (ExceptT(..))
-import           Control.Monad.Catch (MonadMask(..))
+import           Control.Monad.Catch (MonadMask(..), MonadCatch, try)
 
 import           Data.Maybe (Maybe, maybe)
 import           Data.Either (Either(..), either)
@@ -192,3 +194,7 @@ joinErrorsEither :: (Functor m, Monad m) => EitherT x (EitherT y m) a -> EitherT
 joinErrorsEither =
   joinErrors Right Left
 {-# INLINE joinErrorsEither #-}
+
+tryEitherT :: (Functor m, MonadCatch m, Exception e) => (e -> x) -> m a -> EitherT x m a
+tryEitherT handler = firstEitherT handler . newEitherT . try
+{-# INLINE tryEitherT #-}
