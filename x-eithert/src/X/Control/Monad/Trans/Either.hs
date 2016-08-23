@@ -19,6 +19,7 @@ module X.Control.Monad.Trans.Either (
   , firstEitherT
   , secondEitherT
   , eitherTFromMaybe
+  , hoistMaybe
   , hoistEitherT
   , mapEitherE
   , joinEitherT
@@ -129,6 +130,11 @@ eitherTFromMaybe :: Functor m => x -> m (Maybe a) -> EitherT x m a
 eitherTFromMaybe x =
   EitherT . fmap (maybe (Left x) Right)
 {-# INLINE eitherTFromMaybe #-}
+
+hoistMaybe :: Monad m => x -> Maybe a -> EitherT x m a
+hoistMaybe x =
+  maybe (left x) return
+{-# INLINE hoistMaybe #-}
 
 hoistEitherT :: (forall b. m b -> n b) -> EitherT x m a -> EitherT x n a
 hoistEitherT f =
