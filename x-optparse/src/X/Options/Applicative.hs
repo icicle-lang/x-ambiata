@@ -10,14 +10,17 @@ module X.Options.Applicative (
   , textRead
   , command'
   , dispatch
+  , cli
+  , daemon
   , safeCommand
   , versionFlag
   , dryRunFlag
   ) where
 
-import           Control.Monad ((>>=))
+import           Control.Monad ((>>=), (>>), mapM)
 
 import qualified Data.Attoparsec.Text as A
+import           Data.Char (Char)
 import           Data.Eq (Eq)
 import           Data.Either (Either (..), either)
 import           Data.Function (($), (.))
@@ -31,8 +34,9 @@ import qualified Data.Text as T
 import           Options.Applicative as X
 import           Options.Applicative.Types as X
 
-import           System.IO (IO)
+import           System.IO (IO, putStrLn, print)
 import           System.Environment (getArgs)
+import           System.Exit (exitSuccess)
 
 import           Text.Show (Show)
 
@@ -85,6 +89,43 @@ dispatch p = getArgs >>= \x -> case x of
         in  execParserPure (prefs showHelpOnError) (info (p <**> helper) idm) <$> getArgs
             >>= handleParseResult . removeError
   _  -> execParser (info (p <**> helper) idm)
+
+-- | Simple interface over 'dispatch' and 'safeCommand'
+--
+-- @ name -> version -> dependencyInfo -> parser -> action @
+--
+--   Example usage:
+--
+-- > cli "my-cli" buildInfoVersion dependencyInfo myThingParser $ \c ->
+-- >  case c of
+-- >      DoThingA -> ...
+-- >      DoThingB -> ...
+cli :: Show a => [Char] -> [Char] -> [[Char]] -> Parser a -> (a -> IO b) -> IO b
+cli name v deps commandParser act = do
+  dispatch (safeCommand commandParser) >>= \a ->
+    case a of
+      VersionCommand ->
+        putStrLn (name <> ": " <> v) >> exitSuccess
+      DependencyCommand ->
+        mapM putStrLn deps >> exitSuccess
+      RunCommand DryRun c ->
+        print c >> exitSuccess
+      RunCommand RealRun c ->
+        act c
+
+-- | Simple interface over 'dispatch' with default parsers for help,
+-- 'VersionCommand', 'DependencyCommand' and 'RunCommand'.
+--
+-- @ name -> version -> dependencyInfo -> action @
+--
+--   Example usage:
+--
+-- > daemon "my-daemon" buildInfoVersion dependencyInfo $ do
+-- >  loop my-loop
+daemon :: [Char] -> [Char] -> [[Char]] -> IO a -> IO a
+daemon name v deps act =
+  cli name v deps (pure ()) $ \() ->
+    act
 
 -- | Turn a Parser for a command of type a into a safe command
 --   with a dry-run mode and a version flag
