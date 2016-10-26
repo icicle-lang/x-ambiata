@@ -1,66 +1,72 @@
 [boris]
   version = 1
 
-[build.dist-7-8]
-  command = [
-      ["master", "build", "dist-7-8", "-C", "x-aeson"]
-    , ["master", "build", "dist-7-8", "-C", "x-attoparsec"]
-    , ["master", "build", "dist-7-8", "-C", "x-bytestring"]
-    , ["master", "build", "dist-7-8", "-C", "x-conduit"]
-    , ["master", "build", "dist-7-8", "-C", "x-eithert"]
-    , ["master", "build", "dist-7-8", "-C", "x-exception"]
-    , ["master", "build", "dist-7-8", "-C", "x-htoml"]
-    , ["master", "build", "dist-7-8", "-C", "x-optparse"]
-    , ["master", "build", "dist-7-8", "-C", "x-show"]
-    , ["master", "build", "dist-7-8", "-C", "x-templatehaskell"]
-    , ["master", "build", "dist-7-8", "-C", "x-vector"]
-    ]
+[build.dist-7-10-x-aeson]
+  command = [["master", "build", "dist-7-10", "-C", "x-aeson"]]
 
-[build.dist-7-10]
-  command = [
-      ["master", "build", "dist-7-10", "-C", "x-aeson"]
-    , ["master", "build", "dist-7-10", "-C", "x-attoparsec"]
-    , ["master", "build", "dist-7-10", "-C", "x-bytestring"]
-    , ["master", "build", "dist-7-10", "-C", "x-conduit"]
-    , ["master", "build", "dist-7-10", "-C", "x-eithert"]
-    , ["master", "build", "dist-7-10", "-C", "x-exception"]
-    , ["master", "build", "dist-7-10", "-C", "x-htoml"]
-    , ["master", "build", "dist-7-10", "-C", "x-optparse"]
-    , ["master", "build", "dist-7-10", "-C", "x-show"]
-    , ["master", "build", "dist-7-10", "-C", "x-templatehaskell"]
-    , ["master", "build", "dist-7-10", "-C", "x-vector"]
-    ]
+[build.dist-7-10-x-attoparsec]
+  command = [["master", "build", "dist-7-10", "-C", "x-attoparsec"]]
 
-[build.branches-7-8]
-  command = [
-      ["master", "build", "branches-7-8", "-C", "x-aeson"]
-    , ["master", "build", "branches-7-8", "-C", "x-attoparsec"]
-    , ["master", "build", "branches-7-8", "-C", "x-bytestring"]
-    , ["master", "build", "branches-7-8", "-C", "x-conduit"]
-    , ["master", "build", "branches-7-8", "-C", "x-eithert"]
-    , ["master", "build", "branches-7-8", "-C", "x-exception"]
-    , ["master", "build", "branches-7-8", "-C", "x-htoml"]
-    , ["master", "build", "branches-7-8", "-C", "x-optparse"]
-    , ["master", "build", "branches-7-8", "-C", "x-show"]
-    , ["master", "build", "branches-7-8", "-C", "x-templatehaskell"]
-    , ["master", "build", "branches-7-8", "-C", "x-vector"]
-    ]
+[build.dist-7-10-x-bytestring]
+  command = [["master", "build", "dist-7-10", "-C", "x-bytestring"]]
 
-[build.branches-7-10]
-  command = [
-      ["master", "build", "branches-7-10", "-C", "x-aeson"]
-    , ["master", "build", "branches-7-10", "-C", "x-attoparsec"]
-    , ["master", "build", "branches-7-10", "-C", "x-bytestring"]
-    , ["master", "build", "branches-7-10", "-C", "x-conduit"]
-    , ["master", "build", "branches-7-10", "-C", "x-eithert"]
-    , ["master", "build", "branches-7-10", "-C", "x-exception"]
-    , ["master", "build", "branches-7-10", "-C", "x-htoml"]
-    , ["master", "build", "branches-7-10", "-C", "x-optparse"]
-    , ["master", "build", "branches-7-10", "-C", "x-show"]
-    , ["master", "build", "branches-7-10", "-C", "x-templatehaskell"]
-    , ["master", "build", "branches-7-10", "-C", "x-vector"]
-    ]
+[build.dist-7-10-x-conduit]
+  command = [["master", "build", "dist-7-10", "-C", "x-conduit"]]
 
+[build.dist-7-10-x-eithert]
+  command = [["master", "build", "dist-7-10", "-C", "x-eithert"]]
+
+[build.dist-7-10-x-exception]
+  command = [["master", "build", "dist-7-10", "-C", "x-exception"]]
+
+[build.dist-7-10-x-htoml]
+  command = [["master", "build", "dist-7-10", "-C", "x-htoml"]]
+
+[build.dist-7-10-x-optparse]
+  command = [["master", "build", "dist-7-10", "-C", "x-optparse"]]
+
+[build.dist-7-10-x-show]
+  command = [["master", "build", "dist-7-10", "-C", "x-show"]]
+
+[build.dist-7-10-x-templatehaskell]
+  command = [["master", "build", "dist-7-10", "-C", "x-templatehaskell"]]
+
+[build.dist-7-10-x-vector]
+  command = [["master", "build", "dist-7-10", "-C", "x-vector"]]
+
+
+[build.branches-7-10-x-aeson]
+  command = [["master", "build", "branches-7-10", "-C", "x-aeson"]]
+
+[build.branches-7-10-x-attoparsec]
+  command = [["master", "build", "branches-7-10", "-C", "x-attoparsec"]]
+
+[build.branches-7-10-x-bytestring]
+  command = [["master", "build", "branches-7-10", "-C", "x-bytestring"]]
+
+[build.branches-7-10-x-conduit]
+  command = [["master", "build", "branches-7-10", "-C", "x-conduit"]]
+
+[build.branches-7-10-x-eithert]
+  command = [["master", "build", "branches-7-10", "-C", "x-eithert"]]
+
+[build.branches-7-10-x-exception]
+  command = [["master", "build", "branches-7-10", "-C", "x-exception"]]
+
+[build.branches-7-10-x-htoml]
+  command = [["master", "build", "branches-7-10", "-C", "x-htoml"]]
+
+[build.branches-7-10-x-optparse]
+  command = [["master", "build", "branches-7-10", "-C", "x-optparse"]]
+
+[build.branches-7-10-x-show]
+  command = [["master", "build", "branches-7-10", "-C", "x-show"]]
+
+[build.branches-7-10-x-templatehaskell]
+  command = [["master", "build", "branches-7-10", "-C", "x-templatehaskell"]]
+
+[build.branches-7-10-x-vector]
+  command = [["master", "build", "branches-7-10", "-C", "x-vector"]]
 
 [build.dist-validate]
   command = [["validate-respect"]]
