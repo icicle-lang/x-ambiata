@@ -1,0 +1,50 @@
+name:                  ambiata-x-file-embed
+version:               0.0.1
+license:               AllRightsReserved
+author:                Ambiata <info@ambiata.com>
+maintainer:            Ambiata <info@ambiata.com>
+copyright:             (c) 2015 Ambiata.
+synopsis:              x-file-embed
+category:              x-file-embed
+cabal-version:         >= 1.8
+build-type:            Simple
+description:           x-file-embed.
+
+library
+  build-depends:
+                       base                            >= 3          && < 5
+                     , ambiata-p
+                     , bytestring                      == 0.10.*
+                     , file-embed                      == 0.0.*
+                     , template-haskell                >= 2.8
+                     , text                            == 1.2.*
+
+  ghc-options:
+                       -Wall
+
+  hs-source-dirs:
+                       src
+
+
+  exposed-modules:
+                       X.Data.FileEmbed
+
+test-suite test
+  type:                exitcode-stdio-1.0
+
+  main-is:             test.hs
+
+  ghc-options:         -Wall -threaded -O2
+
+  hs-source-dirs:
+                       test
+
+  build-depends:
+                       base                            >= 3          && < 5
+                     , ambiata-p
+                     , ambiata-x-file-embed
+                     , ambiata-disorder-core
+                     , bytestring                      == 0.10.*
+                     , QuickCheck                      == 2.8.*
+                     , quickcheck-instances            == 0.3.*
+                     , text                            == 1.2.*
