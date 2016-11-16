@@ -19,6 +19,9 @@
 [build.dist-7-10-x-exception]
   command = [["master", "build", "dist-7-10", "-C", "x-exception"]]
 
+[build.dist-7-10-x-file-embed]
+  command = [["master", "build", "dist-7-10", "-C", "x-file-embed"]]
+
 [build.dist-7-10-x-htoml]
   command = [["master", "build", "dist-7-10", "-C", "x-htoml"]]
 
@@ -52,6 +55,9 @@
 
 [build.branches-7-10-x-exception]
   command = [["master", "build", "branches-7-10", "-C", "x-exception"]]
+
+[build.branches-7-10-x-file-embed]
+  command = [["master", "build", "branches-7-10", "-C", "x-file-embed"]]
 
 [build.branches-7-10-x-htoml]
   command = [["master", "build", "branches-7-10", "-C", "x-htoml"]]
