@@ -17,28 +17,18 @@ module X.Options.Applicative (
   , dryRunFlag
   ) where
 
-import           Control.Monad ((>>=), (>>), mapM)
-
 import qualified Data.Attoparsec.Text as A
-import           Data.Char (Char)
-import           Data.Eq (Eq)
-import           Data.Either (Either (..), either)
-import           Data.Function (($), (.))
-import           Data.Functor (fmap)
-import           Data.Monoid (mempty)
-import           Data.Maybe (Maybe, maybe)
 import           Data.String (String)
-import           Data.Text (Text)
 import qualified Data.Text as T
 
 import           Options.Applicative as X
 import           Options.Applicative.Types as X
 
+import           P
+
 import           System.IO (IO, putStrLn, print)
 import           System.Environment (getArgs)
 import           System.Exit (exitSuccess)
-
-import           Text.Show (Show)
 
 
 data RunType =
