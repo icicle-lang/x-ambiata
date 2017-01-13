@@ -27,17 +27,24 @@ module X.Control.Monad.Trans.Either (
   , joinErrorsEither
   , reduceEitherT
   , tryEitherT
+  , sequenceEitherT
+  , sequenceEither
   ) where
 
+import           Control.Applicative.Lift (Lift (..), Errors, runErrors)
 import           Control.Exception.Base (Exception)
 import           Control.Monad (Monad(..), (=<<), join)
+import           Control.Monad.Trans.Class (MonadTrans(..))
 import           Control.Monad.Trans.Except (ExceptT(..))
 import           Control.Monad.Catch (MonadMask(..), MonadCatch, try)
 
 import           Data.Maybe (Maybe, maybe)
+import           Data.Monoid (Monoid(..))
 import           Data.Either (Either(..), either)
 import           Data.Function (($), (.), id)
 import           Data.Functor (Functor(..))
+import           Data.Functor.Constant (Constant (..))
+import           Data.Traversable (Traversable(..))
 
 import           X.Control.Monad.Catch (bracketF)
 
@@ -204,3 +211,28 @@ joinErrorsEither =
 tryEitherT :: (Functor m, MonadCatch m, Exception e) => (e -> x) -> m a -> EitherT x m a
 tryEitherT handler = firstEitherT handler . newEitherT . try
 {-# INLINE tryEitherT #-}
+
+-- | Lift an 'Either' into 'Errors'.
+eitherErrors :: Either e a -> Errors e a
+eitherErrors e =
+  case e of
+    Left es ->
+      Other (Constant es)
+
+    Right a ->
+      Pure a
+{-# INLINE eitherErrors #-}
+
+-- | Like 'sequence', but folding/accumulating all errors in case of a 'Left'.
+sequenceEither :: (Monoid x, Traversable t) => t (Either x a) -> Either x (t a)
+sequenceEither =
+  runErrors . traverse eitherErrors
+{-# INLINE sequenceEither #-}
+
+-- | Evaluate each action in sequence, accumulating all errors in case of a failure.
+-- Note that this means each action will be run independently, regardless of failure.
+sequenceEitherT :: (Monad m, Monoid x, Traversable t) => t (EitherT x m a) -> EitherT x m (t a)
+sequenceEitherT es = do
+  es' <- lift (traverse runEitherT es)
+  hoistEither (sequenceEither es')
+{-# INLINE sequenceEitherT #-}

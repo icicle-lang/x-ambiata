@@ -7,7 +7,7 @@ import           Control.Applicative ((<$>), (<*>), pure)
 import           Control.Monad ((>>), return)
 import           Control.Monad.IO.Class (liftIO)
 
-import           Data.Bool (Bool)
+import           Data.Bool (Bool (..))
 import           Data.Char (Char)
 import           Data.Either (Either(..))
 import           Data.Function (($), (.), id)
@@ -16,7 +16,7 @@ import           Data.Functor.Identity (Identity(..))
 import           Data.IORef (IORef, newIORef, readIORef, modifyIORef)
 import           Data.Int (Int)
 import           Data.Maybe (Maybe(..))
-import           Data.Monoid ((<>))
+import           Data.Monoid (Monoid (..), (<>))
 import           Data.String (String)
 import           Data.Text (Text)
 
@@ -122,6 +122,46 @@ prop_bracketEitherT_aquire_failed a b c = testIO $ do
 swazzle :: IORef Text -> Text -> EitherT () IO ()
 swazzle ref t =
   liftIO $ modifyIORef ref (<> t)
+
+prop_sequenceEither_assoc :: Text -> Text -> Text -> Property
+prop_sequenceEither_assoc x y z =
+  let a = sequenceEither [Right [False], sequenceEither [Left x, Left y], Left z]
+      b = sequenceEither [Left x, sequenceEither [Left y, Left z], Right [True]]
+      c = Left (x <> y <> z)
+  in conjoin [a === b, b === c]
+
+prop_sequenceEither_left_id :: Text -> Property
+prop_sequenceEither_left_id x =
+  sequenceEither [Right True, Left mempty, Left x, Right True] === Left x
+
+prop_sequenceEither_right_id :: Text -> Property
+prop_sequenceEither_right_id x =
+  sequenceEither [Right True, Left x, Left mempty, Right True] === Left x
+
+prop_sequenceEither_rights :: [Int] -> Property
+prop_sequenceEither_rights xs =
+  sequenceEither (fmap Right xs) === (Right xs :: Either Text [Int])
+
+prop_sequenceEitherT_assoc :: Text -> Text -> Text -> Property
+prop_sequenceEitherT_assoc x y z =
+  let a = sequenceEitherT [right [False], sequenceEitherT [left x, left y], left z]
+      b = sequenceEitherT [left x, sequenceEitherT [left y, left z], right [True]]
+      c = left (x <> y <> z) :: EitherT Text Identity [[Bool]]
+  in conjoin [a === b, b === c]
+
+prop_sequenceEitherT_left_id :: Text -> Property
+prop_sequenceEitherT_left_id x =
+  sequenceEitherT [right True, left mempty, left x, right True]
+    === (left x :: EitherT Text Identity [Bool])
+
+prop_sequenceEitherT_right_id :: Text -> Property
+prop_sequenceEitherT_right_id x =
+  sequenceEitherT [right True, left x, left mempty, right True]
+    === (left x :: EitherT Text Identity [Bool])
+
+prop_sequenceEitherT_rights :: [Int] -> Property
+prop_sequenceEitherT_rights xs =
+  sequenceEitherT (fmap right xs) === (right xs :: EitherT Text Identity [Int])
 
 
 return []
