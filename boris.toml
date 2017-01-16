@@ -1,6 +1,13 @@
 [boris]
   version = 1
 
+
+[build.dist-7-8-x-eithert]
+  command = [["master", "build", "dist-7-8", "-C", "x-eithert"]]
+
+[build.dist-7-8-x-optparse]
+  command = [["master", "build", "dist-7-8", "-C", "x-optparse"]]
+
 [build.dist-7-10-x-aeson]
   command = [["master", "build", "dist-7-10", "-C", "x-aeson"]]
 
@@ -37,6 +44,15 @@
 [build.dist-7-10-x-vector]
   command = [["master", "build", "dist-7-10", "-C", "x-vector"]]
 
+[build.dist-validate]
+  command = [["validate-respect"]]
+
+
+[build.branches-7-8-x-eithert]
+  command = [["master", "build", "branches-7-8", "-C", "x-eithert"]]
+
+[build.branches-7-8-x-optparse]
+  command = [["master", "build", "branches-7-8", "-C", "x-optparse"]]
 
 [build.branches-7-10-x-aeson]
   command = [["master", "build", "branches-7-10", "-C", "x-aeson"]]
@@ -74,8 +90,6 @@
 [build.branches-7-10-x-vector]
   command = [["master", "build", "branches-7-10", "-C", "x-vector"]]
 
-[build.dist-validate]
-  command = [["validate-respect"]]
 
 [build.all-submodules]
   command = [["dangling-refs"]]

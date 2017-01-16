@@ -233,6 +233,6 @@ sequenceEither =
 -- Note that this means each action will be run independently, regardless of failure.
 sequenceEitherT :: (Monad m, Monoid x, Traversable t) => t (EitherT x m a) -> EitherT x m (t a)
 sequenceEitherT es = do
-  es' <- lift (traverse runEitherT es)
+  es' <- lift (mapM runEitherT es)
   hoistEither (sequenceEither es')
 {-# INLINE sequenceEitherT #-}
