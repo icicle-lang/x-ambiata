@@ -56,6 +56,7 @@ expand :: (PrimMonad m, MVector v a) => GrowState v (PrimState m) a -> Int -> m 
 expand gs@(GrowState n xs0) m =
   if n + m > MGeneric.length xs0 then
     liftM (GrowState n) $
+      -- Grow *by* `max n m` so the new length is `max (2 * n) (n + m)`.
       MGeneric.unsafeGrow xs0 (max n m)
   else
     return gs
