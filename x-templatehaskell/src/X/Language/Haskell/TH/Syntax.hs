@@ -65,10 +65,6 @@ import qualified Language.Haskell.TH as TH
 import qualified Language.Haskell.TH.Syntax as S
 
 
--- Everything below is as of template-haskell-2.10
--- Upgraders will need to CPP everything in this module.
-
-
 -- -----------------------------------------------------------------------------
 -- Declarations
 
