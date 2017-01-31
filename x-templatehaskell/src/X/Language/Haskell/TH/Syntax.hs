@@ -2,6 +2,7 @@
     This is a defense mechanism against upstream template-haskell churn.
     The idea is to provide a stable bare-minimum interface protected by CPP,
     and use lenses to set/get the unstable fields. -}
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TupleSections #-}
@@ -50,6 +51,9 @@ import           Data.Char (Char)
 import           Data.Foldable (foldl')
 import           Data.Function ((.))
 import           Data.Functor (Functor(..))
+#if MIN_VERSION_template_haskell(2,11,0)
+import           Data.Maybe (Maybe(..))
+#endif
 import           Data.Text (Text)
 import qualified Data.Text as T
 
@@ -72,7 +76,11 @@ data_ ::
   -> [Con] -- ^ Constructors
   -> Dec
 data_ n ps cs =
+#if MIN_VERSION_template_haskell(2,11,0)
+  DataD [] n (fmap TH.PlainTV ps) Nothing cs []
+#else
   DataD [] n (fmap TH.PlainTV ps) cs []
+#endif
 
 -- | Declare a simple function.
 fun_ :: Name -> [Pat] -> Exp -> Dec
@@ -92,7 +100,10 @@ sig =
 -- -----------------------------------------------------------------------------
 -- Constructors
 
+
 -- | A regular constructor, with strict or nonstrict arguments.
+-- Use this with 'isStrict' and 'notStrict', as the 'Strict' datatype
+-- is a moving target.
 normalC :: Name -> [(S.Strict, Type)] -> Con
 normalC =
   NormalC
@@ -100,12 +111,26 @@ normalC =
 -- | A regular constructor, with nonstrict arguments.
 normalC_ :: Name -> [Type] -> Con
 normalC_ n =
-  normalC n . fmap (S.NotStrict,)
+  normalC n . fmap (notStrict,)
 
 -- | A regular constructor, with strict arguments.
 normalC_' :: Name -> [Type] -> Con
 normalC_' n =
-  normalC n . fmap (S.IsStrict,)
+  normalC n . fmap (isStrict,)
+
+isStrict :: S.Strict
+#if MIN_VERSION_template_haskell(2,11,0)
+isStrict = S.Bang S.NoSourceUnpackedness S.SourceStrict
+#else
+isStrict = S.IsStrict
+#endif
+
+notStrict :: S.Strict
+#if MIN_VERSION_template_haskell(2,11,0)
+notStrict = S.Bang S.NoSourceUnpackedness S.NoSourceStrictness
+#else
+notStrict = S.NotStrict
+#endif
 
 -- -----------------------------------------------------------------------------
 -- Types
