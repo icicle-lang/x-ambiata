@@ -26,6 +26,7 @@ library
 
   exposed-modules:
                        X.Language.Haskell.TH
+                       X.Language.Haskell.TH.Syntax
 
 test-suite test
   type:                exitcode-stdio-1.0
