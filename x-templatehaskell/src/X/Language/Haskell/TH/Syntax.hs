@@ -16,6 +16,9 @@ module X.Language.Haskell.TH.Syntax (
   , normalC
   , normalC_
   , normalC_'
+  -- *** Strictness annotations
+  , isStrict
+  , notStrict
   -- * Types
   , conT
   , appT
