@@ -8,6 +8,9 @@
 [build.dist-7-8-x-optparse]
   command = [["master", "build", "dist-7-8", "-C", "x-optparse"]]
 
+[build.dist-7-8-x-templatehaskell]
+  command = [["master", "build", "dist-7-8", "-C", "x-templatehaskell"]]
+
 [build.dist-7-10-x-aeson]
   command = [["master", "build", "dist-7-10", "-C", "x-aeson"]]
 
