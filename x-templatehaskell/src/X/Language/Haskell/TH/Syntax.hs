@@ -16,6 +16,9 @@ module X.Language.Haskell.TH.Syntax (
   , normalC
   , normalC_
   , normalC_'
+  , recC
+  , recC_
+  , recC_'
   -- *** Strictness annotations
   , isStrict
   , notStrict
@@ -117,6 +120,24 @@ normalC_' :: Name -> [Type] -> Con
 normalC_' n =
   normalC n . fmap (isStrict,)
 
+-- | A record constructor, with strict or nonstrict fields.
+-- Use this with 'isStrict' and 'notStrict', as the 'Strict' datatype
+-- is a moving target.
+recC :: Name -> [(Name, S.Strict, Type)] -> Con
+recC =
+  RecC
+
+-- | A record constructor, with nonstrict fields.
+recC_ :: Name -> [(Name, Type)] -> Con
+recC_ n =
+  recC n . fmap (\(fn, t) -> (fn, notStrict, t))
+
+-- | A record constructor, with strict fields.
+recC_' :: Name -> [(Name, Type)] -> Con
+recC_' n =
+  recC n . fmap (\(fn, t) -> (fn, isStrict, t))
+
+-- | A strict strictness annotation.
 isStrict :: S.Strict
 #if MIN_VERSION_template_haskell(2,11,0)
 isStrict = S.Bang S.NoSourceUnpackedness S.SourceStrict
@@ -124,6 +145,7 @@ isStrict = S.Bang S.NoSourceUnpackedness S.SourceStrict
 isStrict = S.IsStrict
 #endif
 
+-- | A nonstrict strictness annotation.
 notStrict :: S.Strict
 #if MIN_VERSION_template_haskell(2,11,0)
 notStrict = S.Bang S.NoSourceUnpackedness S.NoSourceStrictness
