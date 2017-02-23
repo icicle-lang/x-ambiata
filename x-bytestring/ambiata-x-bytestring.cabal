@@ -18,13 +18,14 @@ library
                      , vector                          >= 0.10       && < 0.12
 
   ghc-options:
-                       -Wall
+                       -Wall -O2
 
   hs-source-dirs:
                        src
 
 
   exposed-modules:
+                       X.Data.ByteString
                        X.Data.ByteString.Char8
                        X.Data.ByteString.Unsafe
 
