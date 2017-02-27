@@ -33,6 +33,7 @@ module X.Language.Haskell.TH.Syntax (
   , litE
   , varE
   , conE
+  , recConE
   , lamE
   , appE
   , applyE
@@ -194,6 +195,10 @@ varE =
 conE :: Name -> Exp
 conE =
   ConE
+
+recConE :: Name -> [(Name, Exp)] -> Exp
+recConE =
+  RecConE
 
 lamE :: [Pat] -> Exp -> Exp
 lamE =
