@@ -1,0 +1,63 @@
+name:                  x-unix
+version:               0.0.1
+license:               AllRightsReserved
+author:                Ambiata <info@ambiata.com>
+maintainer:            Ambiata <info@ambiata.com>
+copyright:             (c) 2015 Ambiata.
+synopsis:              x-unix
+category:              x-unixn
+cabal-version:         >= 1.8
+build-type:            Simple
+description:           x-unix.
+
+extra-source-files:
+  include/Test.h
+
+library
+  build-depends:
+                       base                            >= 3          && < 5
+                     , text                            == 1.2.*
+                     , transformers                    >= 0.3        && < 0.5
+                     , c-storable-deriving             == 0.1.*
+
+  ghc-options:
+                       -Wall
+
+  hs-source-dirs:
+                       src
+
+
+  exposed-modules:
+                       X.System.Posix.Fcntl
+
+  include-dirs: include
+  includes:
+    Test.h
+  install-includes:
+    Test.h
+
+  c-sources:
+    cbits/Test.c
+
+test-suite test-io
+  type:                exitcode-stdio-1.0
+
+  main-is:             test-io.hs
+
+  ghc-options:         -Wall -threaded -O2
+
+  hs-source-dirs:
+                       test
+
+  build-depends:
+                       base                            >= 3          && < 5
+                     , x-unix
+                     , unix                            == 2.7.*
+                     , temporary
+                     , directory
+                     , text
+                     , disorder-core
+                     , disorder-corpus
+                     , filepath                        == 1.3.*
+                     , QuickCheck                      == 2.7.*
+                     , quickcheck-instances            == 0.3.*
