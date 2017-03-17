@@ -81,3 +81,4 @@ merge =
 uncons :: Prim a => Vector a -> Maybe (a, Vector a)
 uncons =
   Generic.uncons
+{-# INLINE uncons #-}

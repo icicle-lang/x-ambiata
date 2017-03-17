@@ -162,9 +162,11 @@ lengths =
 {-# INLINE lengths #-}
 
 uncons :: Vector v a => v a -> Maybe (a, v a)
-uncons v
- = let (pre,post) = splitAt 1 v
-   in  (,) <$> (pre !? 0) <*> pure post
+uncons v =
+  if Generic.null v then
+    Nothing
+  else
+    Just (Generic.unsafeHead v, Generic.unsafeTail v)
 {-# INLINE uncons #-}
 
 data IdxOff =
