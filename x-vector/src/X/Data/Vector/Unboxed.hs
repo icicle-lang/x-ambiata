@@ -80,3 +80,4 @@ merge =
 uncons :: Unbox a => Vector a -> Maybe (a, Vector a)
 uncons =
   Generic.uncons
+{-# INLINE uncons #-}

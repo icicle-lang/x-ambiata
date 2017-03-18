@@ -79,3 +79,4 @@ merge =
 uncons :: Vector a -> Maybe (a, Vector a)
 uncons =
   Generic.uncons
+{-# INLINE uncons #-}
