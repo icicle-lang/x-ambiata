@@ -18,6 +18,10 @@ library
                      , transformers-base               == 0.4.*
                      , vector                          >= 0.10       && < 0.12
 
+  if impl(ghc < 8.0)
+    build-depends:
+                       semigroups                      >= 0.16       && < 0.19
+
   ghc-options:
                        -Wall
 
@@ -27,6 +31,7 @@ library
 
   exposed-modules:
                        X.Data.Vector
+                       X.Data.Vector.Cons
                        X.Data.Vector.Generic
                        X.Data.Vector.Grow
                        X.Data.Vector.Primitive
