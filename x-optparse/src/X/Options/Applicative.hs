@@ -72,12 +72,7 @@ command' label description parser =
 --   default behaviour a bit better.
 dispatch :: Parser a -> IO a
 dispatch p = getArgs >>= \x -> case x of
-  [] -> let -- We don't need to see the Missing error if we're getting the whole usage string.
-            removeError' (h, e, c) = (h { helpError = mempty }, e, c)
-            removeError (Failure (ParserFailure failure)) = Failure (ParserFailure ( removeError' <$> failure ))
-            removeError a = a
-        in  execParserPure (prefs showHelpOnError) (info (p <**> helper) idm) <$> getArgs
-            >>= handleParseResult . removeError
+  [] -> customExecParser (prefs showHelpOnError)  (info (p <**> helper) idm)
   _  -> execParser (info (p <**> helper) idm)
 
 -- | Simple interface over 'dispatch' and 'safeCommand'
