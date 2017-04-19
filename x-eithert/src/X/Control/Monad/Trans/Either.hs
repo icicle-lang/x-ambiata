@@ -22,13 +22,19 @@ module X.Control.Monad.Trans.Either (
   , hoistMaybe
   , hoistEitherT
   , mapEitherE
-  , joinEitherT
-  , joinErrors
+  , joinEitherE
+  , bimapJoin
+  , firstJoin
+  , secondJoin
   , joinErrorsEither
   , reduceEitherT
   , tryEitherT
   , sequenceEitherT
   , sequenceEither
+
+  -- * Backwards Compatibility
+  , joinEitherT
+  , joinErrors
   ) where
 
 import           Control.Applicative.Lift (Lift (..), Errors, runErrors)
@@ -153,17 +159,36 @@ mapEitherE f =
   mapEitherT (fmap f)
 {-# INLINE mapEitherE #-}
 
-joinEitherT :: (Functor m, Monad m) => (y -> x) -> EitherT x (EitherT y m) a -> EitherT x m a
-joinEitherT f =
-  let first g = either (Left . g) Right
-  in mapEitherE (join . first f) . runEitherT
-{-# INLINE joinEitherT #-}
+joinEitherE ::
+     Functor m
+  => (Either y (Either x a) -> Either z b)
+  -> EitherT x (EitherT y m) a
+  -> EitherT z m b
+joinEitherE f =
+  mapEitherE f . runEitherT
+{-# INLINE joinEitherE #-}
 
--- | unify the errors of 2 nested EithersT
-joinErrors :: (Functor m, Monad m) => (x -> z) -> (y -> z) -> EitherT x (EitherT y m) a -> EitherT z m a
-joinErrors f g =
-  joinEitherT g . firstEitherT f
-{-# INLINE joinErrors #-}
+bimapJoin :: (Functor m, Monad m) => (x -> z) -> (y -> z) -> EitherT x (EitherT y m) a -> EitherT z m a
+bimapJoin f g =
+  let
+    first h =
+      either (Left . h) Right
+
+    second =
+      fmap
+  in
+    joinEitherE (join . second (first f) . first g)
+{-# INLINE bimapJoin #-}
+
+firstJoin :: (Functor m, Monad m) => (x -> y) -> EitherT x (EitherT y m) a -> EitherT y m a
+firstJoin f =
+  bimapJoin f id
+{-# INLINE firstJoin #-}
+
+secondJoin :: (Functor m, Monad m) => (y -> x) -> EitherT x (EitherT y m) a -> EitherT x m a
+secondJoin f =
+  bimapJoin id f
+{-# INLINE secondJoin #-}
 
 -- |
 -- `joinErrors` results in a cycle of hoists/mapEitherTs and joinErrors to bubble errors up to the top layer of EitherT
@@ -236,3 +261,18 @@ sequenceEitherT es = do
   es' <- lift (mapM runEitherT es)
   hoistEither (sequenceEither es')
 {-# INLINE sequenceEitherT #-}
+
+
+------------------------------------------------------------------------
+
+-- | Backwards compatibility for 'secondJoin'.
+joinEitherT :: (Functor m, Monad m) => (y -> x) -> EitherT x (EitherT y m) a -> EitherT x m a
+joinEitherT =
+  secondJoin
+{-# INLINE joinEitherT #-}
+
+-- | Backwards compatibility for 'bimapJoin.
+joinErrors :: (Functor m, Monad m) => (x -> z) -> (y -> z) -> EitherT x (EitherT y m) a -> EitherT z m a
+joinErrors =
+  bimapJoin
+{-# INLINE joinErrors #-}
