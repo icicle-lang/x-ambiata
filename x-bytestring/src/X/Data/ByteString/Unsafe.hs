@@ -4,9 +4,12 @@
 module X.Data.ByteString.Unsafe (
     unsafeSplits
   , unsafeSlice
+
+  , module Data.ByteString.Unsafe
   ) where
 
 import           Data.ByteString.Internal (ByteString(..))
+import           Data.ByteString.Unsafe
 import qualified Data.Vector.Generic as Generic
 
 import           P
