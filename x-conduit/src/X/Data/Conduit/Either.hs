@@ -4,6 +4,8 @@
 
 module X.Data.Conduit.Either
   ( bindEither
+  , concatRights
+  , mapRightConcat
   , mapRightE
   , mapRightM_
   ) where
@@ -21,6 +23,17 @@ import qualified Data.Conduit.List as DCL
 -- | Standard monadic bind specialized for Either in a conduit.
 bindEither :: Monad m => (a -> Either e b) -> Conduit (Either e a) m (Either e b)
 bindEither = DCL.map . (=<<)
+
+-- | concat the Right values.
+concatRights :: (Monad m, Foldable t) => Conduit (Either e (t a)) m (Either e a)
+concatRights =
+  DC.awaitForever $ either (DC.yield . Left) (mapM_ (DC.yield . Right))
+
+-- | Apply a function `a -> [b]` in a `concatMap` style to the `Right` values.
+mapRightConcat :: (Monad m, Foldable t) => (a -> t b) -> Conduit (Either e a) m (Either e b)
+mapRightConcat f =
+  DC.awaitForever $ either (DC.yield . Left) (mapM_ (DC.yield . Right) . f)
+
 
 -- | mapRight ef fab : Map a pure function that may produce `Either` over the
 -- `Right` of the input `Either` converting `Left` from the input to `Left` of

@@ -41,6 +41,30 @@ prop_bindEither_works =
     errOdd :: Int -> Either Char Int
     errOdd i = if odd i then Left 'o' else Right i
 
+
+prop_concatRights_works :: Property
+prop_concatRights_works =
+  QC.forAll QC.arbitrary $ \ (xss :: [Either Char Int]) -> do
+    let xs = DL.map (either Left (Right . abs)) xss
+    let ys = runIC $ CL.sourceList xs =$= CL.map expandRight =$= concatRights $$ CL.consume
+    QC.counterexample "lefts" (DL.length (lefts ys) === DL.length (lefts xs))
+      .&&. QC.counterexample "sum" (sum (rights ys) === sum (rights xs))
+  where
+    expandRight :: Either Char Int -> Either Char [Int]
+    expandRight (Left x) = Left x
+    expandRight (Right x) = Right $ replicate x 1
+
+prop_mapRightConcat_works :: Property
+prop_mapRightConcat_works =
+  QC.forAll QC.arbitrary $ \ (xss :: [Either Char Int]) -> do
+    let xs = DL.map (either Left (Right . abs)) xss
+    let ys = runIC $ CL.sourceList xs =$= mapRightConcat expandInt $$ CL.consume
+    QC.counterexample "lefts" (DL.length (lefts ys) === DL.length (lefts xs))
+      .&&. QC.counterexample "sum" (sum (rights ys) === sum (rights xs))
+  where
+    expandInt :: Int -> [Int]
+    expandInt x = replicate x 1
+
 prop_mapRightE_works :: Property
 prop_mapRightE_works =
   QC.forAll QC.arbitrary $ \ (xs :: [Either Char Int]) -> do
