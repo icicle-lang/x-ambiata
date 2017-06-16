@@ -143,7 +143,7 @@ imap ::
   -> Cons v a
   -> Cons v b
 imap f (Cons xs) =
-  Cons $ Generic.imap (\i -> f i) xs
+  Cons $ Generic.imap f xs
 {-# INLINE imap #-}
 
 imapM ::
@@ -154,7 +154,7 @@ imapM ::
   -> Cons v a
   -> m (Cons v b)
 imapM f (Cons xs) =
-  Cons <$> Generic.imapM (\i -> f i) xs
+  Cons <$> Generic.imapM f xs
 {-# INLINE imapM #-}
 
 ifor ::
