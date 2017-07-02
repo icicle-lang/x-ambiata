@@ -8,6 +8,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DeriveTraversable #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 module X.Data.Vector.Cons (
@@ -80,7 +81,7 @@ import qualified X.Data.Vector.Generic as Generic
 
 newtype Cons v a =
   Cons (v a)
-  deriving (Eq, Ord, Generic, Functor, Foldable, Traversable)
+  deriving (Eq, Ord, Generic, Functor, Foldable, Traversable, NFData)
 
 instance (Show a, Generic.Vector v a) => Show (Cons v a) where
   showsPrec _ =
