@@ -13,13 +13,13 @@ description:           x-htoml.
 library
   build-depends:
                        base                            >= 3          && < 6
-                     -- htoml depends on tasty, which depends on clock
-                     -- clock-0.6.x is broken on CentOS 6 so we need to pin it to 0.5.x here
-                     , clock                           == 0.5.*
-                     , htoml                           >= 0.1.0.3    && < 0.2
+                     , containers                      >= 0.5        && < 0.6
                      , lens                            >= 4.6        && < 4.16
+                     , old-locale                      == 1.0.*
+                     , parsec                          >= 3.1.2      && < 4
                      , text                            == 1.2.*
                      , time                            >= 1.4        && < 1.7
+                     , unordered-containers            >= 0.2        && < 0.3
 
   ghc-options:
                        -Wall
@@ -29,6 +29,10 @@ library
 
 
   exposed-modules:
+                       Text.Toml
+                       Text.Toml.Parser
+                       Text.Toml.Types
+
                        X.Text.Toml
 
 test-suite test
@@ -43,7 +47,6 @@ test-suite test
 
   build-depends:
                        base                            >= 3          && < 5
-                     , htoml
                      , ambiata-disorder-core
                      , ambiata-disorder-lens
                      , text
