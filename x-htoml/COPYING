@@ -1,0 +1,3 @@
+This package contains a copy of htoml-0.1.0.3 with dependencies to aeson,
+vector and tasty removed. This has the effect of removing the transitive Cabal
+dependency which was causing us problems.
