@@ -96,6 +96,17 @@ prop_mapRightM_works =
     readInts :: FilePath -> IO [Int]
     readInts fp = mapMaybe readMaybe . DL.lines <$> IO.readFile fp
 
+prop_groupRightBy_works :: Property
+prop_groupRightBy_works =
+  QC.forAll (DL.sortBy cmpRight <$> QC.arbitrary) $ \ (xs :: [Either Char Int]) -> do
+    let ys = runIC $ CL.sourceList xs =$= groupRightBy (==) $$ CL.consume
+    QC.counterexample "rights" (rights ys === DL.group (rights xs))
+      .&&. QC.counterexample "lefts" (lefts ys == lefts xs)
+  where
+    cmpRight (Left _) _ = EQ
+    cmpRight _ (Left _) = EQ
+    cmpRight (Right a) (Right b) = compare a b
+
 -- -----------------------------------------------------------------------------
 
 return []

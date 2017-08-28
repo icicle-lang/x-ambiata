@@ -5,6 +5,7 @@
 module X.Data.Conduit.Either
   ( bindEither
   , concatRights
+  , groupRightBy
   , mapRightConcat
   , mapRightE
   , mapRightM_
@@ -16,6 +17,7 @@ import           Control.Monad.IO.Class (MonadIO, liftIO)
 import           Data.Conduit (Conduit)
 import qualified Data.Conduit as DC
 import qualified Data.Conduit.List as DCL
+import qualified Data.List as DL
 
 
 -- Conduit combinators for working on conduits containing `Either`s.
@@ -50,3 +52,28 @@ mapRightM_ actionR =
   DC.awaitForever $
     either (DC.yield . Left)
         (\a -> liftIO (actionR a) >>= either (DC.yield . Left) (const $ DC.yield (Right a)))
+
+-- | Similar to `groupBy` but working only on `Right` values.
+-- If a `Left` value is encountered it will be yielded immediately while the
+-- current grouping opertion continues.
+groupRightBy :: Monad m => (a -> a -> Bool) -> Conduit (Either e a) m (Either e [a])
+groupRightBy req = go []
+  where
+    go !acc = DC.await >>= \ mv ->
+      case mv of
+        Nothing ->
+          if DL.null acc
+            then pure ()
+            else DC.yield (Right $ DL.reverse acc)
+        Just (Left e) -> do
+          DC.yield $ Left e
+          go acc
+        Just (Right y) ->
+          case acc of
+            [] -> go [y]
+            (x:_) ->
+              if req x y
+                then go (y : acc)
+                else do
+                  DC.yield (Right $ DL.reverse acc)
+                  go [y]
