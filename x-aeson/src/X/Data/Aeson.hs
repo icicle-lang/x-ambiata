@@ -102,7 +102,7 @@ parseEitherFailO :: FromJSON a => (b -> Text) -> (a -> Either b c) -> Text -> Ob
 parseEitherFailO e f p o =
   parseEitherFail e f =<< o .: p
 
-parseEitherFail :: FromJSON a => (b -> Text) -> (a -> Either b c) -> a -> Parser c
+parseEitherFail :: (b -> Text) -> (a -> Either b c) -> a -> Parser c
 parseEitherFail e f =
   either (fail . T.unpack . e) pure . f
 
@@ -110,7 +110,7 @@ parseMaybeFailO :: FromJSON a => Text -> (a -> Maybe b) -> Text -> Object -> Par
 parseMaybeFailO e f p o =
   parseMaybeFail e f =<< o .: p
 
-parseMaybeFail :: FromJSON a => Text -> (a -> Maybe b) -> a -> Parser b
+parseMaybeFail :: Text -> (a -> Maybe b) -> a -> Parser b
 parseMaybeFail e f =
   maybe (fail $ T.unpack e) pure . f
 
