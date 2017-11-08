@@ -1,6 +1,7 @@
 [boris]
   version = 1
 
+## GHC 7.8 Builds
 
 [build.dist-7-8-x-eithert]
   command = [["master", "build", "dist-7-8", "-C", "x-eithert"]]
@@ -10,6 +11,8 @@
 
 [build.dist-7-8-x-templatehaskell]
   command = [["master", "build", "dist-7-8", "-C", "x-templatehaskell"]]
+
+## GHC 7.10 Builds
 
 [build.dist-7-10-x-aeson]
   command = [["master", "build", "dist-7-10", "-C", "x-aeson"]]
@@ -47,15 +50,50 @@
 [build.dist-7-10-x-vector]
   command = [["master", "build", "dist-7-10", "-C", "x-vector"]]
 
-[build.dist-validate]
-  command = [["validate-respect"]]
+## GHC 8.0 Builds
 
+[build.dist-8-0-x-aeson]
+  command = [["master", "build", "dist-8-0", "-C", "x-aeson"]]
+
+[build.dist-8-0-x-attoparsec]
+  command = [["master", "build", "dist-8-0", "-C", "x-attoparsec"]]
+
+[build.dist-8-0-x-bytestring]
+  command = [["master", "build", "dist-8-0", "-C", "x-bytestring"]]
+
+[build.dist-8-0-x-conduit]
+  command = [["master", "build", "dist-8-0", "-C", "x-conduit"]]
+
+[build.dist-8-0-x-eithert]
+  command = [["master", "build", "dist-8-0", "-C", "x-eithert"]]
+
+[build.dist-8-0-x-exception]
+  command = [["master", "build", "dist-8-0", "-C", "x-exception"]]
+
+[build.dist-8-0-x-file-embed]
+  command = [["master", "build", "dist-8-0", "-C", "x-file-embed"]]
+
+[build.dist-8-0-x-htoml]
+  command = [["master", "build", "dist-8-0", "-C", "x-htoml"]]
+
+[build.dist-8-0-x-optparse]
+  command = [["master", "build", "dist-8-0", "-C", "x-optparse"]]
+
+[build.dist-8-0-x-show]
+  command = [["master", "build", "dist-8-0", "-C", "x-show"]]
+
+[build.dist-8-0-x-templatehaskell]
+  command = [["master", "build", "dist-8-0", "-C", "x-templatehaskell"]]
+
+## GHC 7.8 Branch Builds
 
 [build.branches-7-8-x-eithert]
   command = [["master", "build", "branches-7-8", "-C", "x-eithert"]]
 
 [build.branches-7-8-x-optparse]
   command = [["master", "build", "branches-7-8", "-C", "x-optparse"]]
+
+## GHC 7.10 Branch Builds
 
 [build.branches-7-10-x-aeson]
   command = [["master", "build", "branches-7-10", "-C", "x-aeson"]]
@@ -93,6 +131,43 @@
 [build.branches-7-10-x-vector]
   command = [["master", "build", "branches-7-10", "-C", "x-vector"]]
 
+## GHC 8.0 Branch Builds
+
+[build.branches-8-0-x-aeson]
+  command = [["master", "build", "branches-8-0", "-C", "x-aeson"]]
+
+[build.branches-8-0-x-attoparsec]
+  command = [["master", "build", "branches-8-0", "-C", "x-attoparsec"]]
+
+[build.branches-8-0-x-bytestring]
+  command = [["master", "build", "branches-8-0", "-C", "x-bytestring"]]
+
+[build.branches-8-0-x-conduit]
+  command = [["master", "build", "branches-8-0", "-C", "x-conduit"]]
+
+[build.branches-8-0-x-eithert]
+  command = [["master", "build", "branches-8-0", "-C", "x-eithert"]]
+
+[build.branches-8-0-x-exception]
+  command = [["master", "build", "branches-8-0", "-C", "x-exception"]]
+
+[build.branches-8-0-x-file-embed]
+  command = [["master", "build", "branches-8-0", "-C", "x-file-embed"]]
+
+[build.branches-8-0-x-htoml]
+  command = [["master", "build", "branches-8-0", "-C", "x-htoml"]]
+
+[build.branches-8-0-x-optparse]
+  command = [["master", "build", "branches-8-0", "-C", "x-optparse"]]
+
+[build.branches-8-0-x-show]
+  command = [["master", "build", "branches-8-0", "-C", "x-show"]]
+
+[build.branches-8-0-x-templatehaskell]
+  command = [["master", "build", "branches-8-0", "-C", "x-templatehaskell"]]
+
+[build.dist-validate]
+  command = [["validate-respect"]]
 
 [build.all-submodules]
   command = [["dangling-refs"]]
