@@ -13,7 +13,7 @@ description:           x-aeson.
 library
   build-depends:
                        ambiata-p
-                     , aeson                           >= 0.8        && < 1.2
+                     , aeson                           >= 0.8        && < 1.4
                      , base                            >= 3          && < 6
                      , bytestring                      == 0.10.*
                      , containers                      == 0.5.*
