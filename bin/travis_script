@@ -4,10 +4,11 @@ cabal --version
 echo "$(ghc --version) [$(ghc --print-project-git-commit-id 2> /dev/null || echo '?')]"
 
 ROOT=$PWD
+MAFIA=$ROOT/framework/mafia
 PACKAGES=$(echo $PWD/*/*.cabal | xargs -n1 dirname)
 for PACKAGE in $PACKAGES; do
     cd $PACKAGE
-    $ROOT/bin/mafia build
-    $ROOT/bin/mafia testci
-    [ -d src ] && $($ROOT/bin/mafia install doctest)/doctest src
+    $MAFIA build
+    $MAFIA testci
+    [ -d src ] && $($MAFIA install doctest)/doctest src
 done
