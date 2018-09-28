@@ -2,11 +2,14 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE PatternGuards #-}
 {-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE CPP #-}
 module X.Data.Vector.Stream.Map
   ( mapAccumulateM
   , mapAccumulate
   , mapMaybeM
+  #if !MIN_VERSION_vector(0,12,0)
   , mapMaybe
+  #endif
   , imapMaybeM
   , imapMaybe
   ) where

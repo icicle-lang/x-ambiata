@@ -39,5 +39,5 @@ test-suite test
                      , ambiata-disorder-core
                      , ambiata-p
                      , ambiata-x-show
-                     , QuickCheck                      == 2.8.*
-                     , quickcheck-instances            == 0.3.*
+                     , QuickCheck
+                     , quickcheck-instances

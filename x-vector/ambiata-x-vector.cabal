@@ -60,9 +60,9 @@ test-suite test
                      , ambiata-disorder-core
                      , ambiata-p
                      , ambiata-x-vector
-                     , QuickCheck                      == 2.8.*
-                     , quickcheck-instances            == 0.3.*
-                     , transformers                    >= 0.4        && < 0.6
+                     , QuickCheck
+                     , quickcheck-instances
+                     , transformers
 
 benchmark bench
   type:                exitcode-stdio-1.0
@@ -78,6 +78,6 @@ benchmark bench
                      , ambiata-p
                      , ambiata-x-vector
                      , containers                      == 0.5.*
-                     , criterion                       == 1.1.*
-                     , deepseq                         >= 1.3 && < 1.5
+                     , criterion                       >= 1.1        && < 1.6
+                     , deepseq                         >= 1.3        && < 1.5
                      , transformers                    >= 0.4        && < 0.6

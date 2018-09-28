@@ -49,7 +49,7 @@ test-suite test
                      , base
                      , ambiata-disorder-aeson
                      , ambiata-disorder-core
-                     , QuickCheck                      == 2.8.*
-                     , quickcheck-instances            == 0.3.*
+                     , QuickCheck
+                     , quickcheck-instances
                      , text
                      , ambiata-x-aeson

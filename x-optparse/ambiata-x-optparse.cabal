@@ -40,13 +40,13 @@ test-suite test
                        test
 
   build-depends:
-                       base                            >= 3          && < 5
+                       base
                      , ambiata-disorder-core
                      , ambiata-x-optparse
                      , attoparsec
                      , optparse-applicative
-                     , text                            == 1.2.*
+                     , text
                      , transformers
                      , transformers-compat
-                     , QuickCheck                      == 2.8.*
-                     , quickcheck-instances            == 0.3.*
+                     , QuickCheck
+                     , quickcheck-instances

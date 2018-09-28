@@ -1,5 +1,6 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE CPP #-}
 module X.Data.Vector (
     module Boxed
 
@@ -11,8 +12,10 @@ module X.Data.Vector (
   -- * Elementwise operations
 
   -- ** Mapping
+  #if !MIN_VERSION_vector(0,12,0)
   , mapMaybe
   , imapMaybe
+  #endif
   , mapAccumulate
 
   -- ** Monadic mapping
@@ -41,6 +44,7 @@ transpose =
   Generic.transpose
 {-# INLINE transpose #-}
 
+#if !MIN_VERSION_vector(0,12,0)
 mapMaybe :: (a -> Maybe b) -> Vector a -> Vector b
 mapMaybe =
   Generic.mapMaybe
@@ -50,6 +54,7 @@ imapMaybe :: (Int -> a -> Maybe b) -> Vector a -> Vector b
 imapMaybe =
   Generic.imapMaybe
 {-# INLINE imapMaybe #-}
+#endif
 
 mapMaybeM :: Monad m => (a -> m (Maybe b)) -> Vector a -> m (Vector b)
 mapMaybeM =

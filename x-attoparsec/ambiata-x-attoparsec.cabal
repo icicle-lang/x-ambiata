@@ -44,8 +44,8 @@ test-suite test
                        base
                      , ambiata-disorder-core
                      , ambiata-p
-                     , bytestring                      == 0.10.*
-                     , QuickCheck                      == 2.8.*
-                     , quickcheck-instances            == 0.3.*
+                     , bytestring
+                     , QuickCheck
+                     , quickcheck-instances
                      , text
                      , ambiata-x-attoparsec
