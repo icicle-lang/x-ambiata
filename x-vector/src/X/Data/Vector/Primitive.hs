@@ -13,10 +13,10 @@ module X.Data.Vector.Primitive (
   -- * Elementwise operations
 
   -- ** Mapping
-  #if !MIN_VERSION_vector(0,12,0)
+#if !MIN_VERSION_vector(0,12,0)
   , mapMaybe
   , imapMaybe
-  #endif
+#endif
   , mapAccumulate
 
   -- ** Monadic mapping

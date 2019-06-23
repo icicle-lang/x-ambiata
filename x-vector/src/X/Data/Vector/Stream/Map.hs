@@ -7,9 +7,9 @@ module X.Data.Vector.Stream.Map
   ( mapAccumulateM
   , mapAccumulate
   , mapMaybeM
-  #if !MIN_VERSION_vector(0,12,0)
+#if !MIN_VERSION_vector(0,12,0)
   , mapMaybe
-  #endif
+#endif
   , imapMaybeM
   , imapMaybe
   ) where
