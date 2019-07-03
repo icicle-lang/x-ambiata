@@ -20,8 +20,10 @@ module X.Data.Vector.Generic (
   -- * Elementwise operations
 
   -- ** Mapping
+#if !MIN_VERSION_vector(0,12,0)
   , mapMaybe
   , imapMaybe
+#endif
   , mapAccumulate
 
   -- ** Monadic mapping
@@ -192,6 +194,7 @@ unsafeSplits f xs sizes =
     Generic.unfoldrN (Generic.length sizes) loop (IdxOff 0 0)
 {-# INLINE unsafeSplits #-}
 
+#if !MIN_VERSION_vector(0,12,0)
 mapMaybe :: (Vector v a, Vector v b) => (a -> Maybe b) -> v a -> v b
 mapMaybe f =
   Stream.inplace (Stream.mapMaybe f) toMax
@@ -201,6 +204,7 @@ imapMaybe :: (Vector v a, Vector v b) => (Int -> a -> Maybe b) -> v a -> v b
 imapMaybe f =
   Stream.inplace (Stream.imapMaybe f) toMax
 {-# INLINE imapMaybe #-}
+#endif
 
 mapMaybeM :: Monad m => (Vector v a, Vector v b) => (a -> m (Maybe b)) -> v a -> m (v b)
 mapMaybeM f =

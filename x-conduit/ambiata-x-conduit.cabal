@@ -1,5 +1,5 @@
 name:                  ambiata-x-conduit
-version:               0.0.1
+version:               0.0.1.1
 license:               AllRightsReserved
 author:                Ambiata <info@ambiata.com>
 maintainer:            Ambiata <info@ambiata.com>
@@ -46,13 +46,13 @@ test-suite test
                        base                            >= 3          && < 5
                      , ambiata-x-conduit
                      , ambiata-disorder-core
-                     , bytestring                      == 0.10.*
-                     , conduit                         == 1.2.*
-                     , conduit-extra                   == 1.1.*
-                     , filepath                        >= 1.3        && < 1.5
-                     , mtl                             == 2.2.*
-                     , QuickCheck                      >= 2.8        && < 2.10
-                     , quickcheck-instances            == 0.3.*
-                     , resourcet                       == 1.1.*
+                     , bytestring
+                     , conduit
+                     , conduit-extra
+                     , filepath
+                     , mtl
+                     , QuickCheck
+                     , quickcheck-instances
+                     , resourcet
                      , temporary
-                     , text                            == 1.2.*
+                     , text

@@ -1,5 +1,5 @@
 name:                  ambiata-x-file-embed
-version:               0.0.1
+version:               0.0.1.1
 license:               AllRightsReserved
 author:                Ambiata <info@ambiata.com>
 maintainer:            Ambiata <info@ambiata.com>
@@ -40,11 +40,11 @@ test-suite test
                        test
 
   build-depends:
-                       base                            >= 3          && < 5
+                       base
                      , ambiata-p
                      , ambiata-x-file-embed
                      , ambiata-disorder-core
-                     , bytestring                      == 0.10.*
-                     , QuickCheck                      == 2.8.*
-                     , quickcheck-instances            == 0.3.*
-                     , text                            == 1.2.*
+                     , bytestring
+                     , QuickCheck
+                     , quickcheck-instances
+                     , text

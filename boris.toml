@@ -1,17 +1,6 @@
 [boris]
   version = 1
 
-## GHC 7.8 Builds
-
-[build.dist-7-8-x-eithert]
-  command = [["master", "build", "dist-7-8", "-C", "x-eithert"]]
-
-[build.dist-7-8-x-optparse]
-  command = [["master", "build", "dist-7-8", "-C", "x-optparse"]]
-
-[build.dist-7-8-x-templatehaskell]
-  command = [["master", "build", "dist-7-8", "-C", "x-templatehaskell"]]
-
 ## GHC 7.10 Builds
 
 [build.dist-7-10-x-aeson]
@@ -85,13 +74,6 @@
 [build.dist-8-0-x-templatehaskell]
   command = [["master", "build", "dist-8-0", "-C", "x-templatehaskell"]]
 
-## GHC 7.8 Branch Builds
-
-[build.branches-7-8-x-eithert]
-  command = [["master", "build", "branches-7-8", "-C", "x-eithert"]]
-
-[build.branches-7-8-x-optparse]
-  command = [["master", "build", "branches-7-8", "-C", "x-optparse"]]
 
 ## GHC 7.10 Branch Builds
 

@@ -1,5 +1,6 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE CPP #-}
 module X.Data.Vector.Primitive (
     module Primitive
 
@@ -12,8 +13,10 @@ module X.Data.Vector.Primitive (
   -- * Elementwise operations
 
   -- ** Mapping
+#if !MIN_VERSION_vector(0,12,0)
   , mapMaybe
   , imapMaybe
+#endif
   , mapAccumulate
 
   -- ** Monadic mapping
@@ -43,6 +46,7 @@ transpose =
   Generic.transpose
 {-# INLINE transpose #-}
 
+#if !MIN_VERSION_vector(0,12,0)
 mapMaybe :: (Prim a, Prim b) => (a -> Maybe b) -> Vector a -> Vector b
 mapMaybe =
   Generic.mapMaybe
@@ -52,6 +56,7 @@ imapMaybe :: (Prim a, Prim b) => (Int -> a -> Maybe b) -> Vector a -> Vector b
 imapMaybe =
   Generic.imapMaybe
 {-# INLINE imapMaybe #-}
+#endif
 
 mapMaybeM :: (Monad m, Prim a, Prim b) => (a -> m (Maybe b)) -> Vector a -> m (Vector b)
 mapMaybeM =

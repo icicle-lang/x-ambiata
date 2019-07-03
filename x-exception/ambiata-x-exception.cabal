@@ -1,5 +1,5 @@
 name:                  ambiata-x-exception
-version:               0.0.1
+version:               0.0.1.1
 license:               AllRightsReserved
 author:                Ambiata <info@ambiata.com>
 maintainer:            Ambiata <info@ambiata.com>
@@ -36,9 +36,9 @@ test-suite test
                        test
 
   build-depends:
-                       base                            >= 3          && < 5
+                       base
                      , ambiata-disorder-core
                      , ambiata-x-exception
-                     , text                            == 1.2.*
-                     , QuickCheck                      == 2.8.*
-                     , quickcheck-instances            == 0.3.*
+                     , text
+                     , QuickCheck
+                     , quickcheck-instances

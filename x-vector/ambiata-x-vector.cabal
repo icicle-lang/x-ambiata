@@ -1,12 +1,12 @@
 name:                  ambiata-x-vector
-version:               0.0.1
+version:               0.0.1.1
 license:               AllRightsReserved
 author:                Ambiata <info@ambiata.com>
 maintainer:            Ambiata <info@ambiata.com>
 copyright:             (c) 2015 Ambiata.
 synopsis:              ambiata-x-vector.
 category:              Prelude
-cabal-version:         >= 1.8
+cabal-version:         >= 1.22
 build-type:            Simple
 description:           ambiata-x-vector.
 
@@ -22,6 +22,8 @@ library
     build-depends:
                        semigroups                      >= 0.16       && < 0.19
 
+  default-language:    Haskell2010
+  
   ghc-options:
                        -Wall
 
@@ -60,10 +62,12 @@ test-suite test
                      , ambiata-disorder-core
                      , ambiata-p
                      , ambiata-x-vector
-                     , QuickCheck                      == 2.8.*
-                     , quickcheck-instances            == 0.3.*
-                     , transformers                    >= 0.4        && < 0.6
+                     , QuickCheck
+                     , quickcheck-instances
+                     , transformers
 
+  default-language:    Haskell2010
+  
 benchmark bench
   type:                exitcode-stdio-1.0
 
@@ -78,6 +82,8 @@ benchmark bench
                      , ambiata-p
                      , ambiata-x-vector
                      , containers                      == 0.5.*
-                     , criterion                       == 1.1.*
-                     , deepseq                         >= 1.3 && < 1.5
+                     , criterion                       >= 1.1        && < 1.6
+                     , deepseq                         >= 1.3        && < 1.5
                      , transformers                    >= 0.4        && < 0.6
+
+  default-language:    Haskell2010

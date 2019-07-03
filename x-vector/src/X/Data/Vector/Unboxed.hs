@@ -1,5 +1,6 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE CPP #-}
 module X.Data.Vector.Unboxed (
     module Unboxed
 
@@ -11,8 +12,10 @@ module X.Data.Vector.Unboxed (
   -- * Elementwise operations
 
   -- ** Mapping
+#if !MIN_VERSION_vector(0,12,0)
   , mapMaybe
   , imapMaybe
+#endif
   , mapAccumulate
 
   -- ** Monadic mapping
@@ -42,6 +45,7 @@ transpose =
   Generic.transpose
 {-# INLINE transpose #-}
 
+#if !MIN_VERSION_vector(0,12,0)
 mapMaybe :: (Unbox a, Unbox b) => (a -> Maybe b) -> Vector a -> Vector b
 mapMaybe =
   Generic.mapMaybe
@@ -51,6 +55,7 @@ imapMaybe :: (Unbox a, Unbox b) => (Int -> a -> Maybe b) -> Vector a -> Vector b
 imapMaybe =
   Generic.imapMaybe
 {-# INLINE imapMaybe #-}
+#endif
 
 mapMaybeM :: (Monad m, Unbox a, Unbox b) => (a -> m (Maybe b)) -> Vector a -> m (Vector b)
 mapMaybeM =
